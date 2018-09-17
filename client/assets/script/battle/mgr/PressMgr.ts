@@ -3,7 +3,7 @@ export class PressMgr
     /**界面的canvas */
     private m_stCanvas: cc.Node;
 
-    public constructor() 
+    constructor() 
     {
         this.Init();
     }

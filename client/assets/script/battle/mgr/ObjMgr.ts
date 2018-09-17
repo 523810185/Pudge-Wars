@@ -1,6 +1,6 @@
 export class ObjMgr 
 {
-    public constructor() 
+    constructor() 
     {
 
     }
