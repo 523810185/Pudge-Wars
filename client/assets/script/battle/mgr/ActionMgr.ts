@@ -36,7 +36,7 @@ export class ActionMgr
         });
         Core.ResourceMgr.LoadRes("prefabs/hook", (res) =>
         {
-            this.m_stHookPool = new NodePool(10, res);
+            this.m_stHookPool = new NodePool(50, res);
         });
     }
 
@@ -74,7 +74,6 @@ export class ActionMgr
      */
     public HeroSkill(heroID: number, skillID: number, pos: cc.Vec2): void 
     {
-        let node = this.GetNodeByID(heroID);
         if(skillID == CoreConfig.SKILL_HOOK) 
         {
             this.SkillHook(heroID, pos);
@@ -145,7 +144,7 @@ export class ActionMgr
         }
         setTimeout(() =>
         {
-            hookhead.destroy();
+            this.m_stHookPool.CheckIn(hookhead);
         }, hookCnt * 50 * 2);
 
 
