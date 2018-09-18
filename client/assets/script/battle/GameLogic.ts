@@ -37,13 +37,13 @@ export class GameLogic
         this.m_pPressMgr.BindEvent();
 
         // test 创建一个英雄
-        Core.ResourceMgr.LoadRes("prefabs/hero",(res: cc.Prefab) =>
+        Core.ResourceMgr.LoadRes("prefabs/hero", (res: cc.Prefab) =>
         {
             let node = cc.instantiate(res);
             console.log("test英雄已经被创建！");
             this.m_stCanvas.addChild(node);
-            node.position = new cc.Vec2(0,0);
-            this.m_pObjMgr.InsertNode(CoreConfig.TEST_HERO_ID,node);
+            node.position = new cc.Vec2(0, 0);
+            this.m_pObjMgr.InsertNode(CoreConfig.TEST_HERO_ID, node);
         });
     }
 

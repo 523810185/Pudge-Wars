@@ -9,4 +9,6 @@ export class CoreConfig
 
     // test
     public static TEST_HERO_ID: number = 1;
+
+    public static SKILL_HOOK: number = 1;
 }

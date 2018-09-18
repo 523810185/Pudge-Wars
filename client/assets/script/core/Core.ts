@@ -10,9 +10,9 @@ export default class Core
 
     public static Init(): void 
     {
-        this.m_pGameLogic = new GameLogic();
         this.m_pResourceMgr = new ResourceMgr();
         this.m_pNetMgr = new NetMgr();
+        this.m_pGameLogic = new GameLogic();
     }
 
     public static get GameLogic(): GameLogic 
