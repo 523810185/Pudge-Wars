@@ -10,12 +10,12 @@ export class ResourceMgr
     public LoadRes(path: string,callback: Function): void 
     {
         let res = this.m_stResMap.get(path);
-        if(res != null) 
+        if(res) 
         {
-            return res;
+            callback(res);
         }
 
-        cc.loader.loadRes(path,(res) =>
+        cc.loader.loadRes(path,(err,res) =>
         {
             this.m_stResMap.set(path,res);
             callback(res);
