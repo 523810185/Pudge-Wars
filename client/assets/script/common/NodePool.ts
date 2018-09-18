@@ -38,6 +38,7 @@ export class NodePool
     /**将节点归还单位池 */
     public CheckIn(node: cc.Node): void 
     {
+        node.parent = null;
         this.m_stPool.push(node);
     }
 }
