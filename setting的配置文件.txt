@@ -27,6 +27,6 @@
     "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
     "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
     "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
-    "typescript.format.insertSpaceAfterSemicolonInForStatements": false,
+    "typescript.format.insertSpaceAfterSemicolonInForStatements": true,
     "typescript.format.insertSpaceAfterCommaDelimiter": true
 }

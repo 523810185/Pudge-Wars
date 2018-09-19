@@ -9,6 +9,7 @@ export class CoreConfig
 
     // test
     public static TEST_HERO_ID: number = 1;
+    public static TEST_ANIME_ID: number = 2;
 
     public static SKILL_HOOK: number = 1;
 }

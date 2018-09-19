@@ -12,7 +12,7 @@ export class NodePool
         this.m_iSize = poolSize;
         this.m_stProto = prefab;
         this.m_stPool = [];
-        for(let i = 0;i < poolSize;i++) 
+        for(let i = 0; i < poolSize; i++) 
         {
             let node = cc.instantiate(prefab);
             this.m_stPool.push(node);

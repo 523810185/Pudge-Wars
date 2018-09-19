@@ -1,6 +1,6 @@
 import Core from "./core/Core";
 
-const {ccclass,property} = cc._decorator;
+const {ccclass, property} = cc._decorator;
 
 @ccclass
 export default class Entrance extends cc.Component
@@ -37,7 +37,7 @@ export default class Entrance extends cc.Component
      */
     private BindEvent(): void 
     {
-        this.m_stBtnStartGame.on(cc.Node.EventType.TOUCH_END,this.OnClickStartGameHandler.bind(this));
+        this.m_stBtnStartGame.on(cc.Node.EventType.TOUCH_END, this.OnClickStartGameHandler.bind(this));
     }
 
     /**

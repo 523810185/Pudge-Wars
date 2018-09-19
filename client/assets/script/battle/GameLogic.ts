@@ -1,5 +1,5 @@
 import {PressMgr} from "./mgr/PressMgr";
-import {ObjMgr} from "./mgr/ObjMgr";
+import {UnitMgr, Unit, eType} from "./mgr/UnitMgr";
 import {ActionMgr} from "./mgr/ActionMgr";
 import Core from "../core/Core";
 import {CoreConfig} from "../core/CoreConfig";
@@ -11,7 +11,7 @@ export class GameLogic
     /**点击事件管理者 */
     private m_pPressMgr: PressMgr;
     /**所有的活物体管理者 */
-    private m_pObjMgr: ObjMgr;
+    private m_pUnitMgr: UnitMgr;
     /**动作管理者 */
     private m_pActionMgr: ActionMgr;
 
@@ -27,7 +27,7 @@ export class GameLogic
 
         // 初始化管理者
         this.m_pPressMgr = new PressMgr();
-        this.m_pObjMgr = new ObjMgr();
+        this.m_pUnitMgr = new UnitMgr();
         this.m_pActionMgr = new ActionMgr();
     }
 
@@ -36,14 +36,24 @@ export class GameLogic
     {
         this.m_pPressMgr.BindEvent();
 
-        // test 创建一个英雄
+        // test 创建一个英雄 --> 自己
         Core.ResourceMgr.LoadRes("prefabs/hero", (res: cc.Prefab) =>
         {
             let node = cc.instantiate(res);
             console.log("test英雄已经被创建！");
             this.m_stCanvas.addChild(node);
             node.position = new cc.Vec2(0, 0);
-            this.m_pObjMgr.InsertNode(CoreConfig.TEST_HERO_ID, node);
+            this.m_pUnitMgr.InsertNode(CoreConfig.TEST_HERO_ID, new Unit(node, eType.Hero));
+        });
+
+        // --> 敌人
+        Core.ResourceMgr.LoadRes("prefabs/hero", (res: cc.Prefab) =>
+        {
+            let node = cc.instantiate(res);
+            console.log("test敌人已经被创建！");
+            this.m_stCanvas.addChild(node);
+            node.position = new cc.Vec2(Math.random() * CoreConfig.CANVAS_WIDTH / 2, Math.random() * CoreConfig.CANVAS_HEIGHT / 2);
+            this.m_pUnitMgr.InsertNode(CoreConfig.TEST_ANIME_ID, new Unit(node, eType.Hero));
         });
     }
 
@@ -51,9 +61,9 @@ export class GameLogic
     {
         return this.m_pPressMgr;
     }
-    public get ObjMgr(): ObjMgr
+    public get UnitMgr(): UnitMgr
     {
-        return this.m_pObjMgr;
+        return this.m_pUnitMgr;
     }
     public get ActionMgr(): ActionMgr 
     {

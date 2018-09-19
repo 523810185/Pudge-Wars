@@ -6,7 +6,7 @@
   "filterMode": "bilinear",
   "premultiplyAlpha": false,
   "subMetas": {
-    "hook": {
+    "hookhead": {
       "ver": "1.0.3",
       "uuid": "0e5df31b-9a3e-4c1c-b5fc-eb47e0358cc5",
       "rawTextureUuid": "9afb8b57-2165-4314-a985-bb6cd4ee4e30",
