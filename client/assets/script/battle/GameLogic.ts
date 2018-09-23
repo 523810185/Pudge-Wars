@@ -3,7 +3,7 @@ import {UnitMgr, Unit, eType} from "./mgr/UnitMgr";
 import {ActionMgr} from "./mgr/ActionMgr";
 import Core from "../core/Core";
 import {CoreConfig} from "../core/CoreConfig";
-import {PoolMgr} from "./mgr/PoolMgr";
+import {SkillMgr} from "./mgr/SkillMgr";
 
 export class GameLogic 
 {
@@ -15,8 +15,8 @@ export class GameLogic
     private m_pUnitMgr: UnitMgr;
     /**动作管理者 */
     private m_pActionMgr: ActionMgr;
-    /**管理一些常用物体的单位池 */
-    private m_pPoolMgr: PoolMgr;
+    /**技能管理器 */
+    private m_pSkillMgr: SkillMgr;
 
     public constructor() 
     {
@@ -32,7 +32,7 @@ export class GameLogic
         this.m_pPressMgr = new PressMgr();
         this.m_pUnitMgr = new UnitMgr();
         this.m_pActionMgr = new ActionMgr();
-        this.m_pPoolMgr = new PoolMgr();
+        this.m_pSkillMgr = new SkillMgr();
     }
 
     /**初始化游戏逻辑 */
@@ -59,6 +59,10 @@ export class GameLogic
             node.position = new cc.Vec2(Math.random() * CoreConfig.CANVAS_WIDTH / 2, Math.random() * CoreConfig.CANVAS_HEIGHT / 2);
             this.m_pUnitMgr.InsertNode(CoreConfig.TEST_ANIME_ID, new Unit(node, eType.Hero).Init(10, 100));
         });
+
+        // test 技能cd部分显示
+        this.m_pSkillMgr.Awake();
+        this.m_pSkillMgr.SetCDLength(1, 3);
     }
 
     public get PressMgr(): PressMgr 
@@ -73,8 +77,8 @@ export class GameLogic
     {
         return this.m_pActionMgr;
     }
-    public get PoolMgr(): PoolMgr 
+    public get SkillMgr(): SkillMgr 
     {
-        return this.m_pPoolMgr;
+        return this.m_pSkillMgr;
     }
 }

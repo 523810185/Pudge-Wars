@@ -4,6 +4,7 @@ import {NodePool} from "../../common/NodePool";
 import {HookSkill} from "../skill/tickSkill/HookSkill";
 import {Unit} from "./UnitMgr";
 import {SpeedUpSkill} from "../skill/tickSkill/SpeedUpSkill";
+import {ShowToast} from "../../common/Toast";
 
 export enum eMoveType
 {
@@ -58,12 +59,21 @@ export class ActionMgr
 
     /**
      * 英雄释放技能
+     * @param btnID 按钮的id
      * @param heroID 释放技能的英雄的id
      * @param skillID 技能的id
      * @param pos 技能释放的坐标点
      */
-    public HeroSkill(heroID: number, skillID: number, pos?: cc.Vec2): void 
+    public HeroSkill(btnID: number, heroID: number, skillID: number, pos?: cc.Vec2): void 
     {
+        // 如果处于cd状态，则直接返回
+        if(Core.GameLogic.SkillMgr.IsInCD(btnID)) 
+        {
+            ShowToast("技能没有准备好！");
+            return;
+        }
+
+        Core.GameLogic.SkillMgr.GoInCD(btnID);
         if(skillID == CoreConfig.SKILL_HOOK) 
         {
             this.SkillHook(heroID, pos);

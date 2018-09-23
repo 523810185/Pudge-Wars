@@ -1,8 +1,8 @@
-import {BaseTickSkill} from "../BaseTickSkill";
+import {BaseTicker} from "../BaseTicker";
 import Core from "../../../core/Core";
 import {NodePool} from "../../../common/NodePool";
 
-export class HookSkill implements BaseTickSkill
+export class HookSkill implements BaseTicker
 {
     /**释放点 */
     private m_stStartPos: cc.Vec2;
@@ -45,8 +45,8 @@ export class HookSkill implements BaseTickSkill
     private Init(): void 
     {
         /**获得单位池 */
-        this.m_stHookChainPool = Core.GameLogic.PoolMgr.GetHookChainPool();
-        this.m_stHookHeadPool = Core.GameLogic.PoolMgr.GetHookHeadPool();
+        this.m_stHookChainPool = Core.PoolMgr.GetHookChainPool();
+        this.m_stHookHeadPool = Core.PoolMgr.GetHookHeadPool();
 
         this.m_stHookArray = [];
         this.m_stCanvas = cc.find('Canvas');

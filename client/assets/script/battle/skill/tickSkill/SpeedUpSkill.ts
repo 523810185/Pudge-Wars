@@ -1,7 +1,7 @@
-import {BaseTickSkill} from "../BaseTickSkill";
+import {BaseTicker} from "../BaseTicker";
 import {Unit} from "../../mgr/UnitMgr";
 
-export class SpeedUpSkill implements BaseTickSkill
+export class SpeedUpSkill implements BaseTicker
 {
     /**完结帧号 */
     private readonly END_CNT: number = 60 * 5;

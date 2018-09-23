@@ -1,4 +1,4 @@
-export interface BaseTickSkill 
+export interface BaseTicker 
 {
 
     /**更新 */

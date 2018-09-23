@@ -7,6 +7,8 @@ export class PoolMgr
     private m_stHookChainPool: NodePool;
     /**钩头的单位池 */
     private m_stHookHeadPool: NodePool;
+    /**Toast的单位池 */
+    private m_stToastPool: NodePool;
 
     public GetHookChainPool(): NodePool 
     {
@@ -16,6 +18,11 @@ export class PoolMgr
     public GetHookHeadPool(): NodePool 
     {
         return this.m_stHookHeadPool;
+    }
+
+    public GetToastPool(): NodePool 
+    {
+        return this.m_stToastPool;
     }
 
     constructor() 
@@ -33,7 +40,11 @@ export class PoolMgr
         });
         Core.ResourceMgr.LoadRes("prefabs/hookHead", (res) =>
         {
-            this.m_stHookHeadPool = new NodePool(50, res);
+            this.m_stHookHeadPool = new NodePool(30, res);
+        });
+        Core.ResourceMgr.LoadRes("prefabs/Toast", (res) =>
+        {
+            this.m_stToastPool = new NodePool(30, res);
         });
     }
 }

@@ -56,6 +56,7 @@ export class PressMgr
         {
             let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
             let content = {
+                btnID: 1,
                 unitID: CoreConfig.TEST_HERO_ID,
                 skillID: CoreConfig.SKILL_HOOK,
                 pos: realPos
@@ -101,6 +102,7 @@ export class PressMgr
                 break;
             case cc.macro.KEY.x:
                 let content = {
+                    btnID: 2,
                     unitID: CoreConfig.TEST_HERO_ID,
                     skillID: CoreConfig.SKILL_SPEED_UP
                 };

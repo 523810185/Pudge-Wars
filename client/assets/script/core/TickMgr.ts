@@ -1,6 +1,6 @@
 import {eProtocolType} from "./NetMgr";
 import Core from "./Core";
-import {BaseTickSkill} from "../battle/skill/BaseTickSkill";
+import {BaseTicker} from "../battle/skill/BaseTicker";
 import {CoreConfig} from "./CoreConfig";
 
 export class TickMgr 
@@ -13,7 +13,7 @@ export class TickMgr
     private readonly TICK_TIME: number = 1.0 / 60;
 
     /**每帧中执行的 */
-    private m_stArrForTickUpdater: Array<BaseTickSkill>;
+    private m_stArrForTickUpdater: Array<BaseTicker>;
 
     /**帧时间 */
     private m_iTickTime: number = 0;
@@ -42,7 +42,7 @@ export class TickMgr
      * 将某个需要在帧更新的单位丢进队列，以在之后的帧被自动更新
      * @param ticker 需要在帧更新的单位
      */
-    public AddTicker(ticker: BaseTickSkill): void 
+    public AddTicker(ticker: BaseTicker): void 
     {
         this.m_stArrForTickUpdater.push(ticker);
     }
@@ -51,7 +51,7 @@ export class TickMgr
     {
         this.m_stArrForMove = new Array<any>();
         this.m_stArrForSkill = new Array<any>();
-        this.m_stArrForTickUpdater = new Array<BaseTickSkill>();
+        this.m_stArrForTickUpdater = new Array<BaseTicker>();
     }
 
     /**在单机中被调用的更新，请不要在单机模式以外的地方调用此函数 */
@@ -65,16 +65,17 @@ export class TickMgr
         // 单机可以立刻更新的部分
         for(let content of this.m_stArrForSkill) 
         {
+            let btnID = content.btnID;
             let unitID = content.unitID;
             let skillID: number = content.skillID;
             let pos: cc.Vec2 = content.pos;
             if(pos) 
             {
-                Core.GameLogic.ActionMgr.HeroSkill(unitID, skillID, pos);
+                Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, pos);
             }
             else 
             {
-                Core.GameLogic.ActionMgr.HeroSkill(unitID, skillID);
+                Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID);
             }
         }
         for(let content of this.m_stArrForMove) 
@@ -117,5 +118,11 @@ export class TickMgr
         {
             this.m_stArrForSkill.push(content);
         }
+    }
+
+    /**返回一帧的时间 */
+    public OneTickTime(): number 
+    {
+        return this.TICK_TIME;
     }
 } 
