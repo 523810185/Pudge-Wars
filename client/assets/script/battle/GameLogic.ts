@@ -3,6 +3,7 @@ import {UnitMgr, Unit, eType} from "./mgr/UnitMgr";
 import {ActionMgr} from "./mgr/ActionMgr";
 import Core from "../core/Core";
 import {CoreConfig} from "../core/CoreConfig";
+import {PoolMgr} from "./mgr/PoolMgr";
 
 export class GameLogic 
 {
@@ -14,6 +15,8 @@ export class GameLogic
     private m_pUnitMgr: UnitMgr;
     /**动作管理者 */
     private m_pActionMgr: ActionMgr;
+    /**管理一些常用物体的单位池 */
+    private m_pPoolMgr: PoolMgr;
 
     public constructor() 
     {
@@ -29,6 +32,7 @@ export class GameLogic
         this.m_pPressMgr = new PressMgr();
         this.m_pUnitMgr = new UnitMgr();
         this.m_pActionMgr = new ActionMgr();
+        this.m_pPoolMgr = new PoolMgr();
     }
 
     /**初始化游戏逻辑 */
@@ -43,7 +47,7 @@ export class GameLogic
             console.log("test英雄已经被创建！");
             this.m_stCanvas.addChild(node);
             node.position = new cc.Vec2(0, 0);
-            this.m_pUnitMgr.InsertNode(CoreConfig.TEST_HERO_ID, new Unit(node, eType.Hero));
+            this.m_pUnitMgr.InsertNode(CoreConfig.TEST_HERO_ID, new Unit(node, eType.Hero).Init(10, 100));
         });
 
         // --> 敌人
@@ -53,7 +57,7 @@ export class GameLogic
             console.log("test敌人已经被创建！");
             this.m_stCanvas.addChild(node);
             node.position = new cc.Vec2(Math.random() * CoreConfig.CANVAS_WIDTH / 2, Math.random() * CoreConfig.CANVAS_HEIGHT / 2);
-            this.m_pUnitMgr.InsertNode(CoreConfig.TEST_ANIME_ID, new Unit(node, eType.Hero));
+            this.m_pUnitMgr.InsertNode(CoreConfig.TEST_ANIME_ID, new Unit(node, eType.Hero).Init(10, 100));
         });
     }
 
@@ -68,5 +72,9 @@ export class GameLogic
     public get ActionMgr(): ActionMgr 
     {
         return this.m_pActionMgr;
+    }
+    public get PoolMgr(): PoolMgr 
+    {
+        return this.m_pPoolMgr;
     }
 }

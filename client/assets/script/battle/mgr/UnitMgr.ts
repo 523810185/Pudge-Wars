@@ -11,12 +11,17 @@ export class Unit
     {
         this.m_stNode = node;
         this.m_eType = eType;
+        this.Init(10, 100);
     }
 
     /**节点本身 */
     private m_stNode: cc.Node;
     /**节点类型 */
     private m_eType: eType;
+    /**移动速度 */
+    private m_iSpeed: number;
+    /**生命值 */
+    private m_iHP: number;
 
     public get Type(): eType 
     {
@@ -28,10 +33,42 @@ export class Unit
         this.m_eType = eType;
     }
 
+    public get Speed(): number 
+    {
+        return this.m_iSpeed;
+    }
+
+    public set Speed(speed: number) 
+    {
+        this.m_iSpeed = speed;
+    }
+
+    public get HP(): number 
+    {
+        return this.m_iHP;
+    }
+
+    public set HP(hp: number) 
+    {
+        this.m_iHP = hp;
+    }
+
     /**得到单位节点 */
     public GetNode(): cc.Node 
     {
         return this.m_stNode;
+    }
+
+    /**
+     * 初始化一些单位的属性值
+     * @param speed 移动速度，默认为10
+     * @param hp 生命值，默认为100
+     */
+    public Init(speed: number, hp: number): Unit 
+    {
+        this.m_iSpeed = speed;
+        this.m_iHP = hp;
+        return this;
     }
 }
 

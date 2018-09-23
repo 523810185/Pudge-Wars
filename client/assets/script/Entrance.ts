@@ -14,6 +14,8 @@ export default class Entrance extends cc.Component
     private m_stLogo: cc.Node;
     /**背景 */
     private m_stBackground: cc.Node;
+    /**游戏是否开始 */
+    private m_bIsStart: boolean = false;
 
     start()
     {
@@ -65,5 +67,17 @@ export default class Entrance extends cc.Component
     private StartGame(): void 
     {
         Core.GameLogic.StartGame();
+        this.m_bIsStart = true;
     }
+
+    update(dt: number): void 
+    {
+        if(!this.m_bIsStart) 
+        {
+            return;
+        }
+
+        Core.TickMgr.Update(dt);
+    }
+
 }

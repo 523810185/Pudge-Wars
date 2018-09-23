@@ -12,4 +12,5 @@ export class CoreConfig
     public static TEST_ANIME_ID: number = 2;
 
     public static SKILL_HOOK: number = 1;
+    public static SKILL_SPEED_UP: number = 2;
 }

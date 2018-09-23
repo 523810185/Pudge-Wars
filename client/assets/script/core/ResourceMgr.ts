@@ -13,6 +13,7 @@ export class ResourceMgr
         if(res) 
         {
             callback(res);
+            return;
         }
 
         cc.loader.loadRes(path, (err, res) =>

@@ -1,6 +1,9 @@
 import Core from "../../core/Core";
 import {CoreConfig} from "../../core/CoreConfig";
 import {NodePool} from "../../common/NodePool";
+import {HookSkill} from "../skill/tickSkill/HookSkill";
+import {Unit} from "./UnitMgr";
+import {SpeedUpSkill} from "../skill/tickSkill/SpeedUpSkill";
 
 export enum eMoveType
 {
@@ -14,10 +17,6 @@ export class ActionMgr
 {
     /**舞台，也是所有物体的父节点 */
     private m_stCanvas: cc.Node;
-    /**钩子的单位池 */
-    private m_stHookChainPool: NodePool;
-    /**钩头的单位池 */
-    private m_stHookHeadPool: NodePool;
 
     constructor()
     {
@@ -28,16 +27,6 @@ export class ActionMgr
     {
         // 找到舞台
         this.m_stCanvas = cc.find("Canvas");
-        // 初始化足够的hook 
-        Core.ResourceMgr.LoadRes("prefabs/hookChain", (res) =>
-        {
-            this.m_stHookChainPool = new NodePool(1000, res);
-            console.log("钩子单位池准备完毕！");
-        });
-        Core.ResourceMgr.LoadRes("prefabs/hookHead", (res) =>
-        {
-            this.m_stHookHeadPool = new NodePool(50, res);
-        });
     }
 
     /**
@@ -47,22 +36,23 @@ export class ActionMgr
      */
     public HeroMove(heroID: number, moveType: eMoveType): void 
     {
+        let speed = this.GetUnitByID(heroID).Speed;
         let node = this.GetNodeByID(heroID);
         if(moveType == eMoveType.UP) 
         {
-            node.position = node.position.add(new cc.Vec2(0, 10));
+            node.position = node.position.add(new cc.Vec2(0, speed));
         }
         else if(moveType == eMoveType.DOWN) 
         {
-            node.position = node.position.add(new cc.Vec2(0, -10));
+            node.position = node.position.add(new cc.Vec2(0, -speed));
         }
         else if(moveType == eMoveType.LEFT) 
         {
-            node.position = node.position.add(new cc.Vec2(-10, 0));
+            node.position = node.position.add(new cc.Vec2(-speed, 0));
         }
         else if(moveType == eMoveType.Right) 
         {
-            node.position = node.position.add(new cc.Vec2(10, 0));
+            node.position = node.position.add(new cc.Vec2(speed, 0));
         }
     }
 
@@ -72,68 +62,16 @@ export class ActionMgr
      * @param skillID 技能的id
      * @param pos 技能释放的坐标点
      */
-    public HeroSkill(heroID: number, skillID: number, pos: cc.Vec2): void 
+    public HeroSkill(heroID: number, skillID: number, pos?: cc.Vec2): void 
     {
         if(skillID == CoreConfig.SKILL_HOOK) 
         {
             this.SkillHook(heroID, pos);
         }
-    }
-
-    /**
-     * 计算从vec(0,1.0)到vec之间的角度
-     * @param vec 向量vec2
-     */
-    private CalcAngle(vec: cc.Vec2): number
-    {
-        let angle: number;
-        let temp = new cc.Vec2(0, 1.0);
-        angle = vec.dot(temp) / (vec.mag() * temp.mag());
-
-        angle = Math.acos(angle) * 180 / Math.PI;
-        if(vec.x < 0) 
+        else if(skillID == CoreConfig.SKILL_SPEED_UP) 
         {
-            angle = 360 - angle;
+            this.SpeedUp(heroID);
         }
-        return angle;
-    }
-
-    /**
-     * 得到被钩的节点
-     * @param hero 释放技能的单位
-     * @param hookHead 钩头
-     */
-    private GetHookedHero(hero: cc.Node, hookHead: cc.Node): cc.Node
-    {
-        let hookedNode: cc.Node = null;
-        let hookDis: number = 40;
-        let unitArray = Core.GameLogic.UnitMgr.UnitArray;
-        let minDis: number = -1;
-        for(let item of unitArray) 
-        {
-            if(hero == item.GetNode())
-            {
-                continue;
-            }
-
-            let dis: number = item.GetNode().position.sub(hookHead.position).mag();
-            if(dis > hookDis) 
-            {
-                continue;
-            }
-
-            if(minDis < 0) 
-            {
-                minDis = dis;
-                hookedNode = item.GetNode();
-            }
-            else if(minDis > dis) 
-            {
-                minDis = dis;
-                hookedNode = item.GetNode();
-            }
-        }
-        return hookedNode;
     }
 
     /**
@@ -143,101 +81,31 @@ export class ActionMgr
     {
         let hero = this.GetNodeByID(CoreConfig.TEST_HERO_ID);
         let skillPos = hero.position; // 释放技能者的位置
-        let itemLength = 15; // 一个钩子的长度
-        let maxLen = 450;    // 钩子延伸的最长长度
-        let hookCnt = (maxLen / itemLength) >> 0; // 钩子的个数
-        let vec: cc.Vec2 = pos.sub(skillPos).normalize(); // 方向向量的单位向量
-        let hookArr: Array<cc.Node> = []; // hookChain的集合
-        let hookHead: cc.Node = this.m_stHookHeadPool.CheckOut();
-        let angle: number;
-        angle = this.CalcAngle(vec);
-        this.m_stCanvas.addChild(hookHead);
+        let vec = pos.sub(skillPos).normalize();
 
-        // 钩头朝向设置
-        hookHead.rotation = angle;
-        // 初始化钩头位置
-        hookHead.position = skillPos;
-
-        // 是否处于返回期
-        let isReturn: boolean = false;
-        // 被钩到的单位
-        let hookedNode: cc.Node = null;
-
-        let tickTime: number = 50 / 1000; // 每帧的时间(s)
-        let timer: cc.Component = new cc.Component();
-        timer.schedule(() =>
-        {
-            if(isReturn) 
-            {
-                if(hookArr.length == 0) 
-                {
-                    this.m_stHookHeadPool.CheckIn(hookHead);
-                    timer.unscheduleAllCallbacks();
-                }
-                else 
-                {
-                    let lastHookChain = hookArr.pop();
-                    hookHead.position = lastHookChain.position;
-
-                    // 钩单位逻辑处理
-                    if(!hookedNode) 
-                    {
-                        hookedNode = this.GetHookedHero(hero, hookHead);
-                    }
-                    else 
-                    {
-                        hookedNode.position = hookHead.position;
-                    }
-
-                    // 归还最后一节hookChain
-                    this.m_stHookChainPool.CheckIn(lastHookChain);
-                }
-            }
-            else 
-            {
-                if(hookArr.length == hookCnt) 
-                {
-                    isReturn = true;
-
-                    // 归还最后一节hookChain
-                    let lastHookChain = hookArr.pop();
-                    hookHead.position = lastHookChain.position;
-                    if(hookedNode != null) 
-                    {
-                        hookedNode.position = lastHookChain.position;
-                    }
-                    this.m_stHookChainPool.CheckIn(lastHookChain);
-                }
-                else 
-                {
-                    let newHookChain = this.m_stHookChainPool.CheckOut();
-                    this.m_stCanvas.addChild(newHookChain);
-                    hookArr.push(newHookChain);
-                    newHookChain.position = skillPos.add(vec.mul(itemLength * hookArr.length));
-                    hookHead.position = skillPos.add(vec.mul(itemLength * (hookArr.length + 1)));
-                }
-
-                // 钩单位逻辑处理
-                if(hookedNode == null) 
-                {
-                    hookedNode = this.GetHookedHero(hero, hookHead);
-                    if(hookedNode != null) 
-                    {
-                        isReturn = true;
-                    }
-                }
-                else 
-                {
-                    cc.warn("钩子技能逻辑出错啦！");
-                    hookedNode.position = hookHead.position;
-                }
-            }
-        }, tickTime, hookCnt * 2);
+        let ticker = new HookSkill(hero, skillPos, vec);
+        Core.TickMgr.AddTicker(ticker);
     }
+
+    /**加速技能 */
+    private SpeedUp(heroID: number) 
+    {
+        let unit = this.GetUnitByID(heroID);
+
+        let ticker = new SpeedUpSkill(unit);
+        Core.TickMgr.AddTicker(ticker);
+    }
+
+    private
 
     private GetNodeByID(unitID: number): cc.Node
     {
         let unit = Core.GameLogic.UnitMgr.GetUnitByID(unitID);
         return unit.GetNode();
+    }
+
+    private GetUnitByID(unitID: number): Unit
+    {
+        return Core.GameLogic.UnitMgr.GetUnitByID(unitID);
     }
 } 
