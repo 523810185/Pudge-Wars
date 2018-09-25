@@ -2,7 +2,7 @@ import {GameLogic} from "../battle/GameLogic";
 import {ResourceMgr} from "./ResourceMgr";
 import {NetMgr} from "./NetMgr";
 import {TickMgr} from "./TickMgr";
-import {PoolMgr} from "../battle/mgr/PoolMgr";
+import {PoolMgr} from "./PoolMgr";
 
 export default class Core
 {

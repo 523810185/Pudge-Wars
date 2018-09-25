@@ -1,10 +1,8 @@
 import Core from "../../core/Core";
 import {CoreConfig} from "../../core/CoreConfig";
-import {NodePool} from "../../common/NodePool";
 import {HookSkill} from "../skill/tickSkill/HookSkill";
-import {Unit} from "./UnitMgr";
 import {SpeedUpSkill} from "../skill/tickSkill/SpeedUpSkill";
-import {ShowToast} from "../../common/Toast";
+import {Unit} from "../common/Unit";
 
 export enum eMoveType
 {
@@ -41,19 +39,27 @@ export class ActionMgr
         let node = this.GetNodeByID(heroID);
         if(moveType == eMoveType.UP) 
         {
-            node.position = node.position.add(new cc.Vec2(0, speed));
+            // node.position = node.position.add(new cc.Vec2(0, speed));
+            let rot = node.rotation / 180 * Math.PI;
+            let vec = new cc.Vec2(Math.sin(rot), Math.cos(rot));
+            node.position = node.position.add(vec.mul(speed));
         }
         else if(moveType == eMoveType.DOWN) 
         {
-            node.position = node.position.add(new cc.Vec2(0, -speed));
+            // node.position = node.position.add(new cc.Vec2(0, -speed));
+            let rot = node.rotation / 180 * Math.PI;
+            let vec = new cc.Vec2(Math.sin(rot), Math.cos(rot));
+            node.position = node.position.sub(vec.mul(speed));
         }
         else if(moveType == eMoveType.LEFT) 
         {
-            node.position = node.position.add(new cc.Vec2(-speed, 0));
+            // node.position = node.position.add(new cc.Vec2(-speed, 0));
+            node.rotation -= 5;
         }
         else if(moveType == eMoveType.Right) 
         {
-            node.position = node.position.add(new cc.Vec2(speed, 0));
+            // node.position = node.position.add(new cc.Vec2(speed, 0));
+            node.rotation += 5;
         }
     }
 
@@ -66,14 +72,12 @@ export class ActionMgr
      */
     public HeroSkill(btnID: number, heroID: number, skillID: number, pos?: cc.Vec2): void 
     {
-        // 如果处于cd状态，则直接返回
-        if(Core.GameLogic.SkillMgr.IsInCD(btnID)) 
-        {
-            ShowToast("技能没有准备好！");
-            return;
-        }
-
+        // 使播放cd动画
         Core.GameLogic.SkillMgr.GoInCD(btnID);
+        // 使恢复正常状态
+        Core.GameLogic.SkillMgr.GoNormalState(btnID);
+
+        // 各个技能逻辑处理 
         if(skillID == CoreConfig.SKILL_HOOK) 
         {
             this.SkillHook(heroID, pos);
@@ -105,8 +109,6 @@ export class ActionMgr
         let ticker = new SpeedUpSkill(unit);
         Core.TickMgr.AddTicker(ticker);
     }
-
-    private
 
     private GetNodeByID(unitID: number): cc.Node
     {

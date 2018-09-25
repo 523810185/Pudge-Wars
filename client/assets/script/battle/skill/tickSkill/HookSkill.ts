@@ -1,6 +1,7 @@
-import {BaseTicker} from "../BaseTicker";
+import {BaseTicker} from "../../../common/BaseTicker";
 import Core from "../../../core/Core";
 import {NodePool} from "../../../common/NodePool";
+import {eProtocolType} from "../../../core/NetMgr";
 
 export class HookSkill implements BaseTicker
 {
@@ -18,6 +19,8 @@ export class HookSkill implements BaseTicker
     private m_bIsReturn: boolean = false;
     /**被钩到的单位 */
     private m_stHookedNode: cc.Node = null;
+    /**被钩到的单位的id */
+    private m_stHookedUnitID: number = -1;
     /**钩子的单位池 */
     private m_stHookChainPool: NodePool;
     /**钩头的单位池 */
@@ -30,6 +33,8 @@ export class HookSkill implements BaseTicker
     /**钩子的个数 */
     private readonly HOOK_CNT: number = (this.HOOK_MAX_LENGTH / this.HOOK_ITEM_LENGTH) >> 0;
 
+    /**钩子的伤害，以后可能会有动态变化伤害的需求的可能性 */
+    private m_iHookDamage: number = 30;
 
     /**舞台 */
     private m_stCanvas: cc.Node;
@@ -84,6 +89,7 @@ export class HookSkill implements BaseTicker
         {
             if(this.m_stHookArray.length == 0) 
             {
+                // 其实这里不会到达，如果需要补充结算逻辑，请写到Clear方法中
                 this.m_stHookHeadPool.CheckIn(this.m_stHookHead);
             }
             else 
@@ -155,32 +161,33 @@ export class HookSkill implements BaseTicker
     {
         let hookedNode: cc.Node = null;
         let hookDis: number = 40;
-        let unitArray = Core.GameLogic.UnitMgr.UnitArray;
+        let unitMap = Core.GameLogic.UnitMgr.UnitMap;
         let minDis: number = -1;
-        for(let item of unitArray) 
+        unitMap.forEach((item, unitID) =>
         {
             if(hero == item.GetNode())
             {
-                continue;
+                return;
             }
 
             let dis: number = item.GetNode().position.sub(hookHead.position).mag();
             if(dis > hookDis) 
             {
-                continue;
+                return;
             }
 
             if(minDis < 0) 
             {
                 minDis = dis;
                 hookedNode = item.GetNode();
+                this.m_stHookedUnitID = unitID;
             }
             else if(minDis > dis) 
             {
                 minDis = dis;
                 hookedNode = item.GetNode();
             }
-        }
+        });
         return hookedNode;
     }
 
@@ -192,5 +199,14 @@ export class HookSkill implements BaseTicker
     public Clear(): void 
     {
         this.m_stHookHeadPool.CheckIn(this.m_stHookHead);
+        // 造成伤害
+        if(this.m_stHookedNode) 
+        {
+            let content = {
+                unitID: this.m_stHookedUnitID,
+                hpChange: -this.m_iHookDamage
+            };
+            Core.NetMgr.SendMessage(eProtocolType.HP_CHANGE, content);
+        }
     }
 }

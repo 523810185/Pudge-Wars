@@ -6,7 +6,8 @@ export enum eProtocolType
     MOVE = 0,
     SKILL = 1,
     LOGIN = 2,
-    OTHER = 3
+    OTHER = 3,
+    HP_CHANGE = 4
 }
 
 export class Protocol 
@@ -30,6 +31,11 @@ export class NetMgr
 
     }
 
+    /**
+     * 发送消息协议
+     * @param protoType 协议类型
+     * @param content 协议内容
+     */
     public SendMessage(protoType: eProtocolType, content: any): void 
     {
         // 单机模式下，把消息丢给TickMgr的消息队列

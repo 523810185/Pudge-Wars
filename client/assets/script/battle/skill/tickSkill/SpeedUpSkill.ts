@@ -1,5 +1,5 @@
-import {BaseTicker} from "../BaseTicker";
-import {Unit} from "../../mgr/UnitMgr";
+import {BaseTicker} from "../../../common/BaseTicker";
+import {Unit} from "../../common/Unit";
 
 export class SpeedUpSkill implements BaseTicker
 {

@@ -2,6 +2,7 @@ import Core from "../../core/Core";
 import {CoreConfig} from "../../core/CoreConfig";
 import {eMoveType} from "./ActionMgr";
 import {eProtocolType} from "../../core/NetMgr";
+import {ShowToast} from "../../common/Toast";
 
 enum eClickState 
 {
@@ -98,6 +99,13 @@ export class PressMgr
                 }
                 break;
             case cc.macro.KEY.z:
+                // 如果处于cd状态，则直接返回
+                if(Core.GameLogic.SkillMgr.IsInCD(1)) 
+                {
+                    ShowToast("技能没有准备好！");
+                    return;
+                }
+                Core.GameLogic.SkillMgr.GoClickState(1);
                 this.m_iClickState = eClickState.SKILL_ONE;
                 break;
             case cc.macro.KEY.x:

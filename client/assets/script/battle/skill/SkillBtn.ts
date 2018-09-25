@@ -1,5 +1,6 @@
-import {BaseTicker} from "./BaseTicker";
+import {BaseTicker} from "../../common/BaseTicker";
 import Core from "../../core/Core";
+import {CoreConfig} from "../../core/CoreConfig";
 
 export class SkillBtn implements BaseTicker
 {
@@ -20,6 +21,7 @@ export class SkillBtn implements BaseTicker
         this.m_bInCD = false;
         this.m_iCDLength = 0;
         this.m_stSprite = this.m_stBtn.getComponent(cc.Sprite);
+        this.m_stBtn.zIndex = CoreConfig.UI_Z_INDEX;
     }
 
     /**显示技能图标 */
@@ -51,6 +53,18 @@ export class SkillBtn implements BaseTicker
     {
         this.m_bInCD = true;
         this.m_iCDCnt = 0;
+    }
+
+    /**使进入被选择状态 */
+    public GoInClickState(): void 
+    {
+        this.m_stBtn.opacity = 100;
+    }
+
+    /**使返回正常状态 */
+    public GoInNormalState(): void 
+    {
+        this.m_stBtn.opacity = 255;
     }
 
     Update(): void 

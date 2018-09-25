@@ -1,9 +1,10 @@
 import {PressMgr} from "./mgr/PressMgr";
-import {UnitMgr, Unit, eType} from "./mgr/UnitMgr";
+import {UnitMgr} from "./mgr/UnitMgr";
 import {ActionMgr} from "./mgr/ActionMgr";
 import Core from "../core/Core";
 import {CoreConfig} from "../core/CoreConfig";
 import {SkillMgr} from "./mgr/SkillMgr";
+import {Unit, eType} from "./common/Unit";
 
 export class GameLogic 
 {

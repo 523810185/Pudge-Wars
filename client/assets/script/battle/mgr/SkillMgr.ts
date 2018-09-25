@@ -59,4 +59,22 @@ export class SkillMgr
     {
         this.m_arrSkillBtn[btnID - 1].GoInCD();
     }
+
+    /**
+     * 使第id个技能进入被选择状态
+     * @param btnID 技能按钮的序号
+     */
+    public GoClickState(btnID: number): void 
+    {
+        this.m_arrSkillBtn[btnID - 1].GoInClickState();
+    }
+
+    /**
+     * 使第id个技能进入正常状态
+     * @param btnID 技能按钮的序号
+     */
+    public GoNormalState(btnID: number): void 
+    {
+        this.m_arrSkillBtn[btnID - 1].GoInNormalState();
+    }
 }

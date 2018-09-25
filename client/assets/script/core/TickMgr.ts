@@ -1,6 +1,6 @@
 import {eProtocolType} from "./NetMgr";
 import Core from "./Core";
-import {BaseTicker} from "../battle/skill/BaseTicker";
+import {BaseTicker} from "../common/BaseTicker";
 import {CoreConfig} from "./CoreConfig";
 
 export class TickMgr 
@@ -14,6 +14,8 @@ export class TickMgr
 
     /**每帧中执行的 */
     private m_stArrForTickUpdater: Array<BaseTicker>;
+    /**非某帧中执行的 */
+    private m_stArrForNormalTicker: Array<BaseTicker>;
 
     /**帧时间 */
     private m_iTickTime: number = 0;
@@ -47,11 +49,21 @@ export class TickMgr
         this.m_stArrForTickUpdater.push(ticker);
     }
 
+    /**
+     * 将某个仅需要随着时间更新的单位丢进队列，以在之后的被更新。如果需要按帧更新，请调用AddTicker方法
+     * @param ticker 需要在帧更新的单位
+     */
+    public AddNormalTicker(ticker: BaseTicker): void 
+    {
+        this.m_stArrForNormalTicker.push(ticker);
+    }
+
     constructor() 
     {
         this.m_stArrForMove = new Array<any>();
         this.m_stArrForSkill = new Array<any>();
         this.m_stArrForTickUpdater = new Array<BaseTicker>();
+        this.m_stArrForNormalTicker = new Array<BaseTicker>();
     }
 
     /**在单机中被调用的更新，请不要在单机模式以外的地方调用此函数 */
@@ -83,6 +95,23 @@ export class TickMgr
             // TODO ...
         }
 
+        // 非帧更新
+        for(let i = this.m_stArrForNormalTicker.length - 1; i >= 0; i--) 
+        {
+            let item = this.m_stArrForNormalTicker[i];
+            item.Update();
+            if(item.IsFinished()) 
+            {
+                // 如果已经完毕，则移除
+                let len = this.m_stArrForNormalTicker.length;
+                let temp = this.m_stArrForNormalTicker[len - 1];
+                this.m_stArrForNormalTicker[len - 1] = this.m_stArrForNormalTicker[i];
+                this.m_stArrForNormalTicker[i] = temp;
+                this.m_stArrForNormalTicker.pop();
+                item.Clear();
+            }
+        }
+
         // 帧更新
         this.m_iTickTime += dt;
         while(this.m_iTickTime >= this.TICK_TIME) 
@@ -104,7 +133,7 @@ export class TickMgr
     }
 
     /**
-     * 将消息传递给TickMgr
+     * 将消息传递给TickMgr，仅限于在单机下模拟跑帧同步
      * @param protoType 协议类型
      * @param content 协议内容
      */
@@ -117,6 +146,14 @@ export class TickMgr
         else if(protoType == eProtocolType.SKILL) 
         {
             this.m_stArrForSkill.push(content);
+        }
+        else if(protoType == eProtocolType.HP_CHANGE) 
+        {
+            // TODO 封装
+            let unitID = content.unitID;
+            let hpChange = content.hpChange;
+            let unit = Core.GameLogic.UnitMgr.GetUnitByID(unitID);
+            unit.NowHP += hpChange;
         }
     }
 

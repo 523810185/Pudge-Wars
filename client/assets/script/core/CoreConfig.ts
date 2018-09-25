@@ -13,4 +13,7 @@ export class CoreConfig
 
     public static SKILL_HOOK: number = 1;
     public static SKILL_SPEED_UP: number = 2;
+
+    // UI层级
+    public static UI_Z_INDEX: number = 100;
 }
