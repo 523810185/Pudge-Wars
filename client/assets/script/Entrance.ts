@@ -22,6 +22,9 @@ export default class Entrance extends cc.Component
         Core.Init();
         this.GetCanvasNode();
         this.BindEvent();
+
+        // test 
+        // this.testWebSocket();
     }
 
     /**
@@ -80,4 +83,45 @@ export default class Entrance extends cc.Component
         Core.TickMgr.Update(dt);
     }
 
+    private testWebSocket(): void 
+    {
+        let socket = io('http://localhost:3000');
+        socket.emit('client', "coming");
+
+        socket.on("aaa", function(data)
+        {
+            console.log(data);
+        })
+
+        // let ws;
+        // ws = new WebSocket("ws://localhost:3000");
+        // ws.onopen = function(event)
+        // {
+        //     console.log("Send Text WS was opened.");
+        // };
+        // ws.onmessage = function(event)
+        // {
+        //     console.log("response text msg: " + event.data);
+        // };
+        // ws.onerror = function(event)
+        // {
+        //     console.log("Send Text fired an error");
+        // };
+        // ws.onclose = function(event)
+        // {
+        //     console.log("WebSocket instance closed.");
+        // };
+
+        // setTimeout(function()
+        // {
+        //     if(ws.readyState === WebSocket.OPEN)
+        //     {
+        //         ws.send("Hello WebSocket, I'm a text message.");
+        //     }
+        //     else
+        //     {
+        //         console.log("WebSocket instance wasn't ready...");
+        //     }
+        // }, 3);
+    }
 }

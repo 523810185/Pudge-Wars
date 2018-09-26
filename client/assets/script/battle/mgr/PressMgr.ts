@@ -1,7 +1,7 @@
 import Core from "../../core/Core";
 import {CoreConfig} from "../../core/CoreConfig";
 import {eMoveType} from "./ActionMgr";
-import {eProtocolType} from "../../core/NetMgr";
+import {eTickMessageType} from "../../core/NetMgr";
 import {ShowToast} from "../../common/Toast";
 
 enum eClickState 
@@ -62,7 +62,7 @@ export class PressMgr
                 skillID: CoreConfig.SKILL_HOOK,
                 pos: realPos
             };
-            Core.NetMgr.SendMessage(eProtocolType.SKILL, content);
+            Core.NetMgr.SendTickMessage(eTickMessageType.SKILL, content);
             // Core.GameLogic.ActionMgr.HeroSkill(CoreConfig.TEST_HERO_ID, CoreConfig.SKILL_HOOK, realPos);
         }
 
@@ -72,31 +72,52 @@ export class PressMgr
     /**处理键盘按键事件 */
     private OnKeyDownHandler(event): void 
     {
+        let content: any;
         switch(event.keyCode) 
         {
             case cc.macro.KEY.w:
-                if(CoreConfig.SINGLE_MODEL) 
-                {
-                    Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.UP);
-                }
+                // if(CoreConfig.SINGLE_MODEL) 
+                // {
+                //     Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.UP);
+                // }
+                content = {
+                    unitID: CoreConfig.TEST_HERO_ID,
+                    moveType: eMoveType.UP
+                };
+                Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
                 break;
             case cc.macro.KEY.s:
-                if(CoreConfig.SINGLE_MODEL) 
-                {
-                    Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.DOWN);
-                }
+                // if(CoreConfig.SINGLE_MODEL) 
+                // {
+                //     Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.DOWN);
+                // }
+                content = {
+                    unitID: CoreConfig.TEST_HERO_ID,
+                    moveType: eMoveType.DOWN
+                };
+                Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
                 break;
             case cc.macro.KEY.a:
-                if(CoreConfig.SINGLE_MODEL) 
-                {
-                    Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.LEFT);
-                }
+                // if(CoreConfig.SINGLE_MODEL) 
+                // {
+                //     Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.LEFT);
+                // }
+                content = {
+                    unitID: CoreConfig.TEST_HERO_ID,
+                    moveType: eMoveType.LEFT
+                };
+                Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
                 break;
             case cc.macro.KEY.d:
-                if(CoreConfig.SINGLE_MODEL) 
-                {
-                    Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.Right);
-                }
+                // if(CoreConfig.SINGLE_MODEL) 
+                // {
+                //     Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.Right);
+                // }
+                content = {
+                    unitID: CoreConfig.TEST_HERO_ID,
+                    moveType: eMoveType.Right
+                };
+                Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
                 break;
             case cc.macro.KEY.z:
                 // 如果处于cd状态，则直接返回
@@ -109,12 +130,12 @@ export class PressMgr
                 this.m_iClickState = eClickState.SKILL_ONE;
                 break;
             case cc.macro.KEY.x:
-                let content = {
+                content = {
                     btnID: 2,
                     unitID: CoreConfig.TEST_HERO_ID,
                     skillID: CoreConfig.SKILL_SPEED_UP
                 };
-                Core.NetMgr.SendMessage(eProtocolType.SKILL, content);
+                Core.NetMgr.SendTickMessage(eTickMessageType.SKILL, content);
                 break
         }
     }

@@ -6,9 +6,13 @@ import {PoolMgr} from "./PoolMgr";
 
 export default class Core
 {
+    /**游戏逻辑 */
     private static m_pGameLogic: GameLogic;
+    /**资源加载管理器 */
     private static m_pResourceMgr: ResourceMgr;
+    /**联网管理器 */
     private static m_pNetMgr: NetMgr;
+    /**帧管理者 */
     private static m_pTickMgr: TickMgr;
     /**管理一些常用物体的单位池 */
     private static m_pPoolMgr: PoolMgr;

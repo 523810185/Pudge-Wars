@@ -1,7 +1,8 @@
-import {eProtocolType} from "./NetMgr";
+import {eTickMessageType} from "./NetMgr";
 import Core from "./Core";
 import {BaseTicker} from "../common/BaseTicker";
 import {CoreConfig} from "./CoreConfig";
+import {eMoveType} from "../battle/mgr/ActionMgr";
 
 export class TickMgr 
 {
@@ -69,10 +70,10 @@ export class TickMgr
     /**在单机中被调用的更新，请不要在单机模式以外的地方调用此函数 */
     public Update(dt: number): void 
     {
-        if(CoreConfig.SINGLE_MODEL == false)
-        {
-            return;
-        }
+        // if(CoreConfig.SINGLE_MODEL == false)
+        // {
+        //     return;
+        // }
 
         // 单机可以立刻更新的部分
         for(let content of this.m_stArrForSkill) 
@@ -92,7 +93,9 @@ export class TickMgr
         }
         for(let content of this.m_stArrForMove) 
         {
-            // TODO ...
+            let unitID = content.unitID;
+            let moveType = content.moveType;
+            Core.GameLogic.ActionMgr.HeroMove(unitID, moveType);
         }
 
         // 非帧更新
@@ -133,21 +136,21 @@ export class TickMgr
     }
 
     /**
-     * 将消息传递给TickMgr，仅限于在单机下模拟跑帧同步
-     * @param protoType 协议类型
-     * @param content 协议内容
+     * 将帧消息传递给TickMgr，仅限于在单机下模拟跑帧同步
+     * @param msgType 帧消息类型
+     * @param content 帧消息内容
      */
-    public PushMessage(protoType: eProtocolType, content: any): void 
+    public PushTickMessage(msgType: eTickMessageType, content: any): void 
     {
-        if(protoType == eProtocolType.MOVE) 
+        if(msgType == eTickMessageType.MOVE) 
         {
             this.m_stArrForMove.push(content);
         }
-        else if(protoType == eProtocolType.SKILL) 
+        else if(msgType == eTickMessageType.SKILL) 
         {
             this.m_stArrForSkill.push(content);
         }
-        else if(protoType == eProtocolType.HP_CHANGE) 
+        else if(msgType == eTickMessageType.HP_CHANGE) 
         {
             // TODO 封装
             let unitID = content.unitID;
@@ -162,4 +165,4 @@ export class TickMgr
     {
         return this.TICK_TIME;
     }
-} 
+}

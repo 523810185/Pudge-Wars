@@ -16,4 +16,7 @@ export class CoreConfig
 
     // UI层级
     public static UI_Z_INDEX: number = 100;
+
+    // 服务器地址
+    public static SERVER_HOST: string = 'http://localhost:3000';
 }

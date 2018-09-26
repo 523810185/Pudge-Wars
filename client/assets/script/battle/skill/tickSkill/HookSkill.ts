@@ -1,7 +1,7 @@
 import {BaseTicker} from "../../../common/BaseTicker";
 import Core from "../../../core/Core";
 import {NodePool} from "../../../common/NodePool";
-import {eProtocolType} from "../../../core/NetMgr";
+import {eTickMessageType} from "../../../core/NetMgr";
 
 export class HookSkill implements BaseTicker
 {
@@ -35,6 +35,8 @@ export class HookSkill implements BaseTicker
 
     /**钩子的伤害，以后可能会有动态变化伤害的需求的可能性 */
     private m_iHookDamage: number = 30;
+    /**钩子的判定范围 */
+    private m_iHookJudgeDis: number = 40;
 
     /**舞台 */
     private m_stCanvas: cc.Node;
@@ -160,7 +162,6 @@ export class HookSkill implements BaseTicker
     private GetHookedHero(hero: cc.Node, hookHead: cc.Node): cc.Node
     {
         let hookedNode: cc.Node = null;
-        let hookDis: number = 40;
         let unitMap = Core.GameLogic.UnitMgr.UnitMap;
         let minDis: number = -1;
         unitMap.forEach((item, unitID) =>
@@ -171,7 +172,7 @@ export class HookSkill implements BaseTicker
             }
 
             let dis: number = item.GetNode().position.sub(hookHead.position).mag();
-            if(dis > hookDis) 
+            if(dis > this.m_iHookJudgeDis) 
             {
                 return;
             }
@@ -206,7 +207,7 @@ export class HookSkill implements BaseTicker
                 unitID: this.m_stHookedUnitID,
                 hpChange: -this.m_iHookDamage
             };
-            Core.NetMgr.SendMessage(eProtocolType.HP_CHANGE, content);
+            Core.NetMgr.SendTickMessage(eTickMessageType.HP_CHANGE, content);
         }
     }
 }
