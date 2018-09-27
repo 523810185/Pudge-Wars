@@ -2,6 +2,7 @@ import {BaseTicker} from "../../../common/BaseTicker";
 import Core from "../../../core/Core";
 import {NodePool} from "../../../common/NodePool";
 import {eTickMessageType} from "../../../core/NetMgr";
+import {CoreConfig} from "../../../core/CoreConfig";
 
 export class HookSkill implements BaseTicker
 {
@@ -200,14 +201,18 @@ export class HookSkill implements BaseTicker
     public Clear(): void 
     {
         this.m_stHookHeadPool.CheckIn(this.m_stHookHead);
-        // 造成伤害
-        if(this.m_stHookedNode) 
+        // TODO: 造成伤害应当不用跑帧消息
+        if(this.m_stHero == Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID).GetNode()) 
         {
-            let content = {
-                unitID: this.m_stHookedUnitID,
-                hpChange: -this.m_iHookDamage
-            };
-            Core.NetMgr.SendTickMessage(eTickMessageType.HP_CHANGE, content);
+            // 造成伤害
+            if(this.m_stHookedNode) 
+            {
+                let content = {
+                    unitID: this.m_stHookedUnitID,
+                    hpChange: -this.m_iHookDamage
+                };
+                Core.NetMgr.SendTickMessage(eTickMessageType.HP_CHANGE, content);
+            }
         }
     }
 }

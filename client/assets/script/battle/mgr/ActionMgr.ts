@@ -72,10 +72,13 @@ export class ActionMgr
      */
     public HeroSkill(btnID: number, heroID: number, skillID: number, pos?: cc.Vec2): void 
     {
-        // 使播放cd动画
-        Core.GameLogic.SkillMgr.GoInCD(btnID);
-        // 使恢复正常状态
-        Core.GameLogic.SkillMgr.GoNormalState(btnID);
+        if(heroID == CoreConfig.MY_HERO_ID) 
+        {
+            // 使播放cd动画
+            Core.GameLogic.SkillMgr.GoInCD(btnID);
+            // 使恢复正常状态
+            Core.GameLogic.SkillMgr.GoNormalState(btnID);
+        }
 
         // 各个技能逻辑处理 
         if(skillID == CoreConfig.SKILL_HOOK) 
@@ -89,11 +92,22 @@ export class ActionMgr
     }
 
     /**
+     * 让指定id的单位生命值发生变化
+     * @param unitID 单位id
+     * @param hpChange 生命值的变化，可正可负
+     */
+    public UnitHPChange(unitID: number, hpChange: number): void 
+    {
+        let unit = Core.GameLogic.UnitMgr.GetUnitByID(unitID);
+        unit.NowHP += hpChange;
+    }
+
+    /**
      * 钩子技能
      */
     private SkillHook(heroID: number, pos: cc.Vec2): void 
     {
-        let hero = this.GetNodeByID(CoreConfig.TEST_HERO_ID);
+        let hero = this.GetNodeByID(heroID);
         let skillPos = hero.position; // 释放技能者的位置
         let vec = pos.sub(skillPos).normalize();
 

@@ -152,11 +152,9 @@ export class TickMgr
         }
         else if(msgType == eTickMessageType.HP_CHANGE) 
         {
-            // TODO 封装
             let unitID = content.unitID;
             let hpChange = content.hpChange;
-            let unit = Core.GameLogic.UnitMgr.GetUnitByID(unitID);
-            unit.NowHP += hpChange;
+            Core.GameLogic.ActionMgr.UnitHPChange(unitID, hpChange);
         }
     }
 

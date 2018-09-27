@@ -1,4 +1,6 @@
 import Core from "./core/Core";
+import {eMessageHead} from "./core/NetMgr";
+import {CoreConfig} from "./core/CoreConfig";
 
 const {ccclass, property} = cc._decorator;
 
@@ -22,9 +24,6 @@ export default class Entrance extends cc.Component
         Core.Init();
         this.GetCanvasNode();
         this.BindEvent();
-
-        // test 
-        // this.testWebSocket();
     }
 
     /**
@@ -50,9 +49,17 @@ export default class Entrance extends cc.Component
      */
     private OnClickStartGameHandler(): void 
     {
+        if(CoreConfig.SINGLE_MODEL) 
+        {
+            this.StartGame();
+        }
+        else 
+        {
+            Core.NetMgr.EmitMsgToServer(eMessageHead.LOGIN_MESSAGE, "");
+        }
         // this.canvas.active = false;
-        this.HideMainUI();
-        this.StartGame();
+        // this.HideMainUI();
+        // this.StartGame();
     }
 
     /**
@@ -67,9 +74,10 @@ export default class Entrance extends cc.Component
     /**
      * 开始游戏
      */
-    private StartGame(): void 
+    public StartGame(args?: any): void 
     {
-        Core.GameLogic.StartGame();
+        this.HideMainUI();
+        Core.GameLogic.StartGame(args);
         this.m_bIsStart = true;
     }
 
@@ -83,45 +91,4 @@ export default class Entrance extends cc.Component
         Core.TickMgr.Update(dt);
     }
 
-    private testWebSocket(): void 
-    {
-        let socket = io('http://localhost:3000');
-        socket.emit('client', "coming");
-
-        socket.on("aaa", function(data)
-        {
-            console.log(data);
-        })
-
-        // let ws;
-        // ws = new WebSocket("ws://localhost:3000");
-        // ws.onopen = function(event)
-        // {
-        //     console.log("Send Text WS was opened.");
-        // };
-        // ws.onmessage = function(event)
-        // {
-        //     console.log("response text msg: " + event.data);
-        // };
-        // ws.onerror = function(event)
-        // {
-        //     console.log("Send Text fired an error");
-        // };
-        // ws.onclose = function(event)
-        // {
-        //     console.log("WebSocket instance closed.");
-        // };
-
-        // setTimeout(function()
-        // {
-        //     if(ws.readyState === WebSocket.OPEN)
-        //     {
-        //         ws.send("Hello WebSocket, I'm a text message.");
-        //     }
-        //     else
-        //     {
-        //         console.log("WebSocket instance wasn't ready...");
-        //     }
-        // }, 3);
-    }
 }

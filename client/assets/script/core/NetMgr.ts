@@ -1,5 +1,6 @@
 import {CoreConfig} from "./CoreConfig";
 import Core from "./Core";
+import Entrance from "../Entrance";
 
 export enum eTickMessageType 
 {
@@ -11,7 +12,8 @@ export enum eTickMessageType
 
 export enum eMessageHead 
 {
-    TICK_MESSAGE = "tick"
+    TICK_MESSAGE = "tick",
+    LOGIN_MESSAGE = "login"
 }
 
 /**帧消息的结构体 */
@@ -50,14 +52,26 @@ export class NetMgr
         {
             console.log("接到帧消息：", data);
 
-            let str = JSON.parse(data);
-            for(let item of str) 
+            let arr = JSON.parse(data);
+            for(let item of arr) 
             {
                 console.log("--", item);
                 this.HandleTickData(item);
             }
 
             Core.TickMgr.UpdateTicker();
+        });
+
+        this.m_pSocket.on(eMessageHead.LOGIN_MESSAGE, (data) =>
+        {
+            console.log("接到登录回调消息：", data);
+
+            let obj = JSON.parse(data);
+            let loginState = obj[0];
+            let loginContent = obj[1];
+            CoreConfig.MY_HERO_ID = loginContent.myID;
+
+            cc.find('Canvas').getComponent(Entrance).StartGame(loginContent.idArr);
         });
     }
 
@@ -128,11 +142,9 @@ export class NetMgr
         }
         else if(head == eTickMessageType.HP_CHANGE) 
         {
-            // TODO 封装
             let unitID = content.unitID;
             let hpChange = content.hpChange;
-            let unit = Core.GameLogic.UnitMgr.GetUnitByID(unitID);
-            unit.NowHP += hpChange;
+            Core.GameLogic.ActionMgr.UnitHPChange(unitID, hpChange);
         }
     }
 }

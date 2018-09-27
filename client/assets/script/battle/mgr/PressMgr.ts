@@ -58,7 +58,7 @@ export class PressMgr
             let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
             let content = {
                 btnID: 1,
-                unitID: CoreConfig.TEST_HERO_ID,
+                unitID: CoreConfig.MY_HERO_ID,
                 skillID: CoreConfig.SKILL_HOOK,
                 pos: realPos
             };
@@ -81,7 +81,7 @@ export class PressMgr
                 //     Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.UP);
                 // }
                 content = {
-                    unitID: CoreConfig.TEST_HERO_ID,
+                    unitID: CoreConfig.MY_HERO_ID,
                     moveType: eMoveType.UP
                 };
                 Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
@@ -92,7 +92,7 @@ export class PressMgr
                 //     Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.DOWN);
                 // }
                 content = {
-                    unitID: CoreConfig.TEST_HERO_ID,
+                    unitID: CoreConfig.MY_HERO_ID,
                     moveType: eMoveType.DOWN
                 };
                 Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
@@ -103,7 +103,7 @@ export class PressMgr
                 //     Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.LEFT);
                 // }
                 content = {
-                    unitID: CoreConfig.TEST_HERO_ID,
+                    unitID: CoreConfig.MY_HERO_ID,
                     moveType: eMoveType.LEFT
                 };
                 Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
@@ -114,7 +114,7 @@ export class PressMgr
                 //     Core.GameLogic.ActionMgr.HeroMove(CoreConfig.TEST_HERO_ID, eMoveType.Right);
                 // }
                 content = {
-                    unitID: CoreConfig.TEST_HERO_ID,
+                    unitID: CoreConfig.MY_HERO_ID,
                     moveType: eMoveType.Right
                 };
                 Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
@@ -132,7 +132,7 @@ export class PressMgr
             case cc.macro.KEY.x:
                 content = {
                     btnID: 2,
-                    unitID: CoreConfig.TEST_HERO_ID,
+                    unitID: CoreConfig.MY_HERO_ID,
                     skillID: CoreConfig.SKILL_SPEED_UP
                 };
                 Core.NetMgr.SendTickMessage(eTickMessageType.SKILL, content);

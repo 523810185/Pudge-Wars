@@ -5,10 +5,10 @@ export class CoreConfig
     public static CANVAS_HEIGHT: number = 640;
 
     // 是否是单机模式
-    public static SINGLE_MODEL: boolean = true;
+    public static SINGLE_MODEL: boolean = false;
 
     // test
-    public static TEST_HERO_ID: number = 1;
+    public static MY_HERO_ID: number = 1;
     public static TEST_ANIME_ID: number = 2;
 
     public static SKILL_HOOK: number = 1;
@@ -18,5 +18,5 @@ export class CoreConfig
     public static UI_Z_INDEX: number = 100;
 
     // 服务器地址
-    public static SERVER_HOST: string = 'http://localhost:3000';
+    public static SERVER_HOST: string = 'http://118.25.76.185:5000';
 }

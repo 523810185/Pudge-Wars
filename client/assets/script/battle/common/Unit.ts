@@ -1,5 +1,4 @@
 import {HPBar} from "./HPBar";
-import Core from "../../core/Core";
 
 export enum eType 
 {
@@ -92,7 +91,8 @@ export class Unit
     /**
      * 初始化一些单位的属性值
      * @param speed 移动速度，默认为10
-     * @param maxHP 生命值，默认为100
+     * @param maxHP 最大生命值，默认为100
+     * @param nowHP 当前生命值，默认为最大生命值
      */
     public Init(speed: number, maxHP: number, nowHP: number = maxHP): Unit 
     {
