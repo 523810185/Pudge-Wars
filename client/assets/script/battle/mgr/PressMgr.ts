@@ -3,6 +3,7 @@ import {CoreConfig} from "../../core/CoreConfig";
 import {eMoveType} from "./ActionMgr";
 import {eTickMessageType} from "../../core/NetMgr";
 import {ShowToast} from "../../common/Toast";
+import {eSkillStateNext} from "./SkillMgr";
 
 enum eClickState 
 {
@@ -35,7 +36,7 @@ export class PressMgr
      */
     public BindEvent(): void 
     {
-        this.m_stCanvas.on(cc.Node.EventType.TOUCH_START, this.OnClickDownHandler.bind(this));
+        this.m_stCanvas.on(cc.Node.EventType.MOUSE_DOWN, this.OnClickDownHandler.bind(this));
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.OnKeyDownHandler, this);
     }
 
@@ -49,17 +50,26 @@ export class PressMgr
         clickPos.y = ((clickPos.y * 1000) >> 0) / 1000;
         console.log("鼠标点击的位置是", clickPos, event.getLocation());
 
-        if(this.m_iClickState == eClickState.NONE) 
-        {
-            return;
-        }
-        else if(this.m_iClickState == eClickState.SKILL_ONE) 
+        /*if(event.getButton() == cc.Event.EventMouse.BUTTON_RIGHT)
         {
             let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
             let content = {
-                btnID: 1,
                 unitID: CoreConfig.MY_HERO_ID,
-                skillID: CoreConfig.SKILL_HOOK,
+                endPos: realPos
+            };
+            Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
+        }
+        else */if(this.m_iClickState == eClickState.NONE) 
+        {
+            return;
+        }
+        else 
+        {
+            let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
+            let content = {
+                btnID: this.m_iClickState,
+                unitID: CoreConfig.MY_HERO_ID,
+                skillID: Core.GameLogic.SkillMgr.GetSkillIDByBtnID(this.m_iClickState),
                 pos: realPos
             };
             Core.NetMgr.SendTickMessage(eTickMessageType.SKILL, content);
@@ -73,6 +83,7 @@ export class PressMgr
     private OnKeyDownHandler(event): void 
     {
         let content: any;
+        let nextState: eSkillStateNext;
         switch(event.keyCode) 
         {
             case cc.macro.KEY.w:
@@ -120,23 +131,44 @@ export class PressMgr
                 Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
                 break;
             case cc.macro.KEY.z:
-                // 如果处于cd状态，则直接返回
-                if(Core.GameLogic.SkillMgr.IsInCD(1)) 
-                {
-                    ShowToast("技能没有准备好！");
-                    return;
-                }
-                Core.GameLogic.SkillMgr.GoClickState(1);
-                this.m_iClickState = eClickState.SKILL_ONE;
+                this.OnClickSkillBtn(eClickState.SKILL_ONE);
                 break;
             case cc.macro.KEY.x:
-                content = {
-                    btnID: 2,
-                    unitID: CoreConfig.MY_HERO_ID,
-                    skillID: CoreConfig.SKILL_SPEED_UP
-                };
-                Core.NetMgr.SendTickMessage(eTickMessageType.SKILL, content);
-                break
+                this.OnClickSkillBtn(eClickState.SKILL_TWO);
+                break;
+            case cc.macro.KEY.c:
+                this.OnClickSkillBtn(eClickState.SKILL_THREE);
+        }
+    }
+
+    /**
+     * 响应按下某个技能
+     * @param btnID 技能按钮的id
+     */
+    private OnClickSkillBtn(btnID: eClickState): void 
+    {
+        let nextState = Core.GameLogic.SkillMgr.GetSkillStateNext(btnID);
+        if(nextState == eSkillStateNext.NULL) 
+        {
+            ShowToast("你尚未拥有该技能！");
+        }
+        else if(nextState == eSkillStateNext.IN_CD) 
+        {
+            ShowToast("技能没有准备好！");
+        }
+        else if(nextState == eSkillStateNext.TO_GO) 
+        {
+            let content = {
+                btnID: btnID,
+                unitID: CoreConfig.MY_HERO_ID,
+                skillID: Core.GameLogic.SkillMgr.GetSkillIDByBtnID(btnID)
+            };
+            Core.NetMgr.SendTickMessage(eTickMessageType.SKILL, content);
+        }
+        else if(nextState == eSkillStateNext.TO_CHOOSE_STATE)
+        {
+            Core.GameLogic.SkillMgr.GoClickState(btnID);
+            this.m_iClickState = btnID;
         }
     }
 }

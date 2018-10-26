@@ -3,7 +3,9 @@ import {CoreConfig} from "../../core/CoreConfig";
 import {HookSkill} from "../skill/tickSkill/HookSkill";
 import {SpeedUpSkill} from "../skill/tickSkill/SpeedUpSkill";
 import {Unit} from "../common/Unit";
+import {MoveToSkill} from "../skill/tickSkill/MoveToSkill";
 
+/**准备被废弃的移动方案 */
 export enum eMoveType
 {
     UP = 0,
@@ -27,6 +29,19 @@ export class ActionMgr
         // 找到舞台
         this.m_stCanvas = cc.find("Canvas");
     }
+
+    // /**
+    //  * 英雄移动
+    //  * @param heroID 英雄id
+    //  * @param endPos 移动到的位置
+    //  */
+    // public HeroMove(heroID: number, endPos: cc.Vec2) 
+    // {
+    //     console.log("==== ", endPos);
+    //     let unit = this.GetUnitByID(heroID);
+    //     let ticker = new MoveToSkill(unit, endPos);
+    //     Core.TickMgr.AddTicker(ticker);
+    // }
 
     /**
      * 英雄移动
@@ -88,6 +103,10 @@ export class ActionMgr
         else if(skillID == CoreConfig.SKILL_SPEED_UP) 
         {
             this.SpeedUp(heroID);
+        }
+        else 
+        {
+            console.log(heroID, "释放的技能为", skillID);
         }
     }
 

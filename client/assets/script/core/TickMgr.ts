@@ -96,9 +96,11 @@ export class TickMgr
             let unitID = content.unitID;
             let moveType = content.moveType;
             Core.GameLogic.ActionMgr.HeroMove(unitID, moveType);
+            // let endPos = new cc.Vec2(content.endPos.x, content.endPos.y);
+            // Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
         }
 
-        // 非帧更新
+        // 非帧更新（不论单机还是联机都要使用的部分）
         for(let i = this.m_stArrForNormalTicker.length - 1; i >= 0; i--) 
         {
             let item = this.m_stArrForNormalTicker[i];
@@ -115,7 +117,7 @@ export class TickMgr
             }
         }
 
-        // 帧更新
+        // 帧更新（单机下模拟帧）
         this.m_iTickTime += dt;
         while(this.m_iTickTime >= this.TICK_TIME) 
         {

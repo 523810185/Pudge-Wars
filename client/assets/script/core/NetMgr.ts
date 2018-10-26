@@ -7,13 +7,16 @@ export enum eTickMessageType
     MOVE = 0,
     SKILL = 1,
     OTHER = 3,
-    HP_CHANGE = 4
+    HP_CHANGE = 4,
+    SPAWN_THING = 5,
+    PICK_UP = 6
 }
 
 export enum eMessageHead 
 {
     TICK_MESSAGE = "tick",
-    LOGIN_MESSAGE = "login"
+    LOGIN_MESSAGE = "login",
+    PICK_UP_THING = "pick_up_thing"
 }
 
 /**帧消息的结构体 */
@@ -50,7 +53,10 @@ export class NetMgr
         // 监听各种类型的消息
         this.m_pSocket.on(eMessageHead.TICK_MESSAGE, (data) =>
         {
-            console.log("接到帧消息：", data);
+            if(data != "[]") 
+            {
+                console.log("接到帧消息：", data);
+            }
 
             let arr = JSON.parse(data);
             for(let item of arr) 
@@ -124,9 +130,9 @@ export class NetMgr
             let btnID = content.btnID;
             let unitID = content.unitID;
             let skillID: number = content.skillID;
-            let pos: cc.Vec2 = new cc.Vec2(content.pos.x, content.pos.y);
-            if(pos) 
+            if(content.pos != undefined) 
             {
+                let pos: cc.Vec2 = new cc.Vec2(content.pos.x, content.pos.y);
                 Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, pos);
             }
             else 
@@ -139,12 +145,31 @@ export class NetMgr
             let unitID = content.unitID;
             let moveType = content.moveType;
             Core.GameLogic.ActionMgr.HeroMove(unitID, moveType);
+            // let endPos = new cc.Vec2(content.endPos.x, content.endPos.y);
+            // Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
         }
         else if(head == eTickMessageType.HP_CHANGE) 
         {
             let unitID = content.unitID;
             let hpChange = content.hpChange;
             Core.GameLogic.ActionMgr.UnitHPChange(unitID, hpChange);
+        }
+        else if(head == eTickMessageType.SPAWN_THING) 
+        {
+            let thingsArr: Array<any> = content.thingsArr;
+            for(let item of thingsArr) 
+            {
+                let skillID = item.skillID;
+                let thingsID = item.thingID;
+                let pos = new cc.Vec2(item.pos.x, item.pos.y);
+                Core.GameLogic.ThingMgr.CreateSkillThing(thingsID, skillID, pos);
+            }
+        }
+        else if(head == eTickMessageType.PICK_UP) 
+        {
+            let unitID = content.unitID;
+            let thingID = content.thingID;
+            Core.GameLogic.ThingMgr.DestroyThingByID(thingID, unitID);
         }
     }
 }

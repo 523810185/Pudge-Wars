@@ -1,6 +1,6 @@
 import {HPBar} from "./HPBar";
 
-export enum eType 
+export enum eUnitType 
 {
     Hero = 0,
     Building = 1,
@@ -9,7 +9,7 @@ export enum eType
 
 export class Unit 
 {
-    constructor(node: cc.Node, eType: eType, showHPBar: boolean = true)  
+    constructor(node: cc.Node, eType: eUnitType, showHPBar: boolean = true)  
     {
         this.m_stNode = node;
         this.m_eType = eType;
@@ -24,7 +24,7 @@ export class Unit
     /**节点本身 */
     private m_stNode: cc.Node;
     /**节点类型 */
-    private m_eType: eType;
+    private m_eType: eUnitType;
     /**移动速度 */
     private m_iSpeed: number;
     /**目前生命值 */
@@ -34,12 +34,12 @@ export class Unit
     /**HPBar */
     private m_stHPBar: HPBar;
 
-    public get Type(): eType 
+    public get Type(): eUnitType 
     {
         return this.m_eType;
     }
 
-    public set Type(eType: eType) 
+    public set Type(eType: eUnitType) 
     {
         this.m_eType = eType;
     }

@@ -67,6 +67,15 @@ export class SkillBtn implements BaseTicker
         this.m_stBtn.opacity = 255;
     }
 
+    /**
+     * 设置技能图标
+     * @param url 图标的url（或者相对路径）
+     */
+    public SetSkillAvatar(url: string): void 
+    {
+        // TODO ...
+    }
+
     Update(): void 
     {
         if(this.m_bInCD) 

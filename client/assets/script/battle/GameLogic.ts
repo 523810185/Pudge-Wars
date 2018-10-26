@@ -4,7 +4,8 @@ import {ActionMgr} from "./mgr/ActionMgr";
 import Core from "../core/Core";
 import {CoreConfig} from "../core/CoreConfig";
 import {SkillMgr} from "./mgr/SkillMgr";
-import {Unit, eType} from "./common/Unit";
+import {Unit, eUnitType} from "./common/Unit";
+import {ThingMgr} from "./mgr/ThingMgr";
 
 export class GameLogic 
 {
@@ -18,6 +19,8 @@ export class GameLogic
     private m_pActionMgr: ActionMgr;
     /**技能管理器 */
     private m_pSkillMgr: SkillMgr;
+    /**拾取物品管理器 */
+    private m_pThingMgr: ThingMgr;
 
     public constructor() 
     {
@@ -34,6 +37,7 @@ export class GameLogic
         this.m_pUnitMgr = new UnitMgr();
         this.m_pActionMgr = new ActionMgr();
         this.m_pSkillMgr = new SkillMgr();
+        this.m_pThingMgr = new ThingMgr();
     }
 
     /**初始化游戏逻辑 */
@@ -50,7 +54,7 @@ export class GameLogic
                 {
                     let node = cc.instantiate(res);
                     this.m_stCanvas.addChild(node);
-                    if(id == 0) 
+                    if(id == 0) // TODO ... 去掉魔法数字
                     {
                         node.position = new cc.Vec2(-200, 0);
                     }
@@ -58,7 +62,7 @@ export class GameLogic
                     {
                         node.position = new cc.Vec2(200, 0);
                     }
-                    this.m_pUnitMgr.InsertUnit(id, new Unit(node, eType.Hero).Init(10, 100));
+                    this.m_pUnitMgr.InsertUnit(id, new Unit(node, eUnitType.Hero).Init(10, 100));
                 }
                 console.log("英雄已经被创建！");
             });
@@ -72,7 +76,7 @@ export class GameLogic
                 console.log("test英雄已经被创建！");
                 this.m_stCanvas.addChild(node);
                 node.position = new cc.Vec2(0, 0);
-                this.m_pUnitMgr.InsertUnit(CoreConfig.MY_HERO_ID, new Unit(node, eType.Hero).Init(10, 100));
+                this.m_pUnitMgr.InsertUnit(CoreConfig.MY_HERO_ID, new Unit(node, eUnitType.Hero).Init(10, 100));
             });
 
             // --> 敌人
@@ -82,7 +86,7 @@ export class GameLogic
                 console.log("test敌人已经被创建！");
                 this.m_stCanvas.addChild(node);
                 node.position = new cc.Vec2(Math.random() * CoreConfig.CANVAS_WIDTH / 2, Math.random() * CoreConfig.CANVAS_HEIGHT / 2);
-                this.m_pUnitMgr.InsertUnit(CoreConfig.TEST_ANIME_ID, new Unit(node, eType.Hero).Init(10, 100));
+                this.m_pUnitMgr.InsertUnit(CoreConfig.TEST_ANIME_ID, new Unit(node, eUnitType.Hero).Init(10, 100));
             });
         }
 
@@ -106,5 +110,9 @@ export class GameLogic
     public get SkillMgr(): SkillMgr 
     {
         return this.m_pSkillMgr;
+    }
+    public get ThingMgr(): ThingMgr
+    {
+        return this.m_pThingMgr;
     }
 }

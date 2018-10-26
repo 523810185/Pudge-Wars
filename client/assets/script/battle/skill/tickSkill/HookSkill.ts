@@ -3,6 +3,7 @@ import Core from "../../../core/Core";
 import {NodePool} from "../../../common/NodePool";
 import {eTickMessageType} from "../../../core/NetMgr";
 import {CoreConfig} from "../../../core/CoreConfig";
+import {Unit, eUnitType} from "../../common/Unit";
 
 export class HookSkill implements BaseTicker
 {
@@ -163,11 +164,10 @@ export class HookSkill implements BaseTicker
     private GetHookedHero(hero: cc.Node, hookHead: cc.Node): cc.Node
     {
         let hookedNode: cc.Node = null;
-        let unitMap = Core.GameLogic.UnitMgr.UnitMap;
         let minDis: number = -1;
-        unitMap.forEach((item, unitID) =>
+        Core.GameLogic.UnitMgr.VisitUnit((item: Unit, unitID: number) =>
         {
-            if(hero == item.GetNode())
+            if(hero == item.GetNode() || item.Type != eUnitType.Hero)
             {
                 return;
             }

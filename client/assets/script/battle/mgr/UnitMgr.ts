@@ -9,10 +9,16 @@ export class UnitMgr
         this.m_stUnitMap = new Map<number, Unit>();
     }
 
-    /**用get方法是保护性拷贝 */
-    public get UnitMap(): Map<number, Unit>
+    /**
+     * 遍历UnitMgr中所有的单位
+     * @param callback 遍历时执行的回调函数，返回参数为(unit: Unit, unitID: number)
+     */
+    public VisitUnit(callback: Function): void
     {
-        return this.m_stUnitMap;
+        this.m_stUnitMap.forEach((item, unitID) =>
+        {
+            callback(item, unitID);
+        });
     }
 
     /**

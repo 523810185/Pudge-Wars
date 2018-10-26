@@ -11,6 +11,8 @@ export class PoolMgr
     private m_stToastPool: NodePool;
     /**hpBar的单位池 */
     private m_stHPBarPool: NodePool;
+    /**可拾取物品的单位池 */
+    private m_stThingsPool: NodePool;
 
     public GetHookChainPool(): NodePool 
     {
@@ -30,6 +32,11 @@ export class PoolMgr
     public GetHPBarPool(): NodePool 
     {
         return this.m_stHPBarPool;
+    }
+
+    public GetThingsPool(): NodePool 
+    {
+        return this.m_stThingsPool;
     }
 
     constructor() 
@@ -56,6 +63,10 @@ export class PoolMgr
         Core.ResourceMgr.LoadRes("prefabs/hpBar", (res) =>
         {
             this.m_stHPBarPool = new NodePool(30, res);
+        });
+        Core.ResourceMgr.LoadRes("prefabs/things", (res) =>
+        {
+            this.m_stThingsPool = new NodePool(100, res);
         });
     }
 }
