@@ -72,11 +72,20 @@ export default class Entrance extends cc.Component
     }
 
     /**
+     * 显示战斗场景的背景
+     */
+    private ShowBattleBackground(): void 
+    {
+        this.m_stBackground.active = true;
+    }
+
+    /**
      * 开始游戏
      */
     public StartGame(args?: any): void 
     {
         this.HideMainUI();
+        this.ShowBattleBackground();
         Core.GameLogic.StartGame(args);
         this.m_bIsStart = true;
     }
