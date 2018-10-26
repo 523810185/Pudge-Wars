@@ -2,7 +2,7 @@ import Core from "../core/Core";
 
 export function ShowToast(context: string): void 
 {
-    let pool = Core.PoolMgr.GetToastPool();
+    let pool = Core.PoolMgr.GetPoolByName("Toast");
     let toast = pool.CheckOut();
     toast.getComponent(cc.Label).string = context;
     cc.find("Canvas").addChild(toast);

@@ -73,7 +73,11 @@ export class SkillBtn implements BaseTicker
      */
     public SetSkillAvatar(url: string): void 
     {
-        // TODO ...
+        Core.ResourceMgr.LoadRes("texture/skill/" + url, (res) =>
+        {
+            this.m_stSprite.spriteFrame = new cc.SpriteFrame(res);
+            // TODO ... 内部图标改变
+        });
     }
 
     Update(): void 

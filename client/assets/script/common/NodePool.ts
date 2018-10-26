@@ -7,6 +7,7 @@ export class NodePool
     /**单位原型 */
     private m_stProto: cc.Prefab;
 
+    // TODO ... 改成object的pool
     constructor(poolSize: number, prefab: cc.Prefab)
     {
         this.m_iSize = poolSize;

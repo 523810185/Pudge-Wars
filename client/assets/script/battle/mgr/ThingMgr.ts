@@ -28,7 +28,7 @@ export class ThingMgr
      */
     public CreateSkillThing(thingID: number, skillID: number, pos: cc.Vec2): void 
     {
-        let thingNode = Core.PoolMgr.GetThingsPool().CheckOut();
+        let thingNode = Core.PoolMgr.GetPoolByName("things").CheckOut();
         this.m_stCanvas.addChild(thingNode);
         thingNode.position = pos;
 
@@ -46,7 +46,7 @@ export class ThingMgr
     {
         let skillThing: SkillThing = this.m_mapThingMgr.get(thingID);
         this.m_mapThingMgr.delete(thingID);
-        Core.PoolMgr.GetThingsPool().CheckIn(skillThing.GetNode());
+        Core.PoolMgr.GetPoolByName("things").CheckIn(skillThing.GetNode());
 
         if(unitID != undefined) 
         {

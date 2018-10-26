@@ -16,7 +16,12 @@ export class SpeedUpSkill implements BaseTicker
     constructor(unit: Unit) 
     {
         this.m_stUnit = unit;
-        unit.Speed += this.ADD_SPEED;
+        this.Init();
+    }
+
+    private Init(): void 
+    {
+        this.m_stUnit.Speed += this.ADD_SPEED;
     }
 
     public Update(): void 

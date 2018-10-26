@@ -5,7 +5,7 @@ export class CoreConfig
     public static CANVAS_HEIGHT: number = 640;
 
     // 是否是单机模式
-    public static SINGLE_MODEL: boolean = false;
+    public static SINGLE_MODEL: boolean = true;
 
     // test
     public static MY_HERO_ID: number = 1;

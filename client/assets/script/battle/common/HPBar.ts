@@ -19,7 +19,7 @@ export class HPBar implements BaseTicker
     constructor(unit: Unit) 
     {
         this.m_stUnit = unit;
-        this.m_stHPBar = Core.PoolMgr.GetHPBarPool().CheckOut();
+        this.m_stHPBar = Core.PoolMgr.GetPoolByName("hpBar").CheckOut();
         this.m_stHP = this.m_stHPBar.getChildByName("hp");
         cc.find("Canvas").addChild(this.m_stHPBar);
         // 加入Ticker
@@ -29,7 +29,7 @@ export class HPBar implements BaseTicker
     /**销毁这个hpBar */
     public Destroy(): void 
     {
-        Core.PoolMgr.GetHPBarPool().CheckIn(this.m_stHPBar);
+        Core.PoolMgr.GetPoolByName("hpBar").CheckIn(this.m_stHPBar);
         this.m_bIsDestroy = true;
     }
 

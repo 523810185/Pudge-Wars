@@ -48,46 +48,37 @@ export class GameLogic
         if(args) 
         {
             // test 创建英雄
-            Core.ResourceMgr.LoadRes("prefabs/hero", (res: cc.Prefab) =>
+            for(let id of args) 
             {
-                for(let id of args) 
+                let node = Core.PoolMgr.GetPoolByName("pudge").CheckOut();
+                this.m_stCanvas.addChild(node);
+                if(id == 0) // TODO ... 去掉魔法数字
                 {
-                    let node = cc.instantiate(res);
-                    this.m_stCanvas.addChild(node);
-                    if(id == 0) // TODO ... 去掉魔法数字
-                    {
-                        node.position = new cc.Vec2(-200, 0);
-                    }
-                    else 
-                    {
-                        node.position = new cc.Vec2(200, 0);
-                    }
-                    this.m_pUnitMgr.InsertUnit(id, new Unit(node, eUnitType.Hero).Init(10, 100));
+                    node.position = new cc.Vec2(-200, 0);
                 }
-                console.log("英雄已经被创建！");
-            });
+                else 
+                {
+                    node.position = new cc.Vec2(200, 0);
+                }
+                this.m_pUnitMgr.InsertUnit(id, new Unit(node, eUnitType.Hero).Init(10, 100));
+            }
+            console.log("英雄已经被创建！");
         }
         else 
         {
             // test 创建英雄 --> 自己
-            Core.ResourceMgr.LoadRes("prefabs/hero", (res: cc.Prefab) =>
-            {
-                let node = cc.instantiate(res);
-                console.log("test英雄已经被创建！");
-                this.m_stCanvas.addChild(node);
-                node.position = new cc.Vec2(0, 0);
-                this.m_pUnitMgr.InsertUnit(CoreConfig.MY_HERO_ID, new Unit(node, eUnitType.Hero).Init(10, 100));
-            });
+            let node = Core.PoolMgr.GetPoolByName("pudge").CheckOut();
+            console.log("test英雄已经被创建！");
+            this.m_stCanvas.addChild(node);
+            node.position = new cc.Vec2(0, 0);
+            this.m_pUnitMgr.InsertUnit(CoreConfig.MY_HERO_ID, new Unit(node, eUnitType.Hero).Init(10, 100));
 
             // --> 敌人
-            Core.ResourceMgr.LoadRes("prefabs/hero", (res: cc.Prefab) =>
-            {
-                let node = cc.instantiate(res);
-                console.log("test敌人已经被创建！");
-                this.m_stCanvas.addChild(node);
-                node.position = new cc.Vec2(Math.random() * CoreConfig.CANVAS_WIDTH / 2, Math.random() * CoreConfig.CANVAS_HEIGHT / 2);
-                this.m_pUnitMgr.InsertUnit(CoreConfig.TEST_ANIME_ID, new Unit(node, eUnitType.Hero).Init(10, 100));
-            });
+            node = Core.PoolMgr.GetPoolByName("pudge").CheckOut();
+            console.log("test敌人已经被创建！");
+            this.m_stCanvas.addChild(node);
+            node.position = new cc.Vec2(Math.random() * CoreConfig.CANVAS_WIDTH / 2, Math.random() * CoreConfig.CANVAS_HEIGHT / 2);
+            this.m_pUnitMgr.InsertUnit(CoreConfig.TEST_ANIME_ID, new Unit(node, eUnitType.Hero).Init(10, 100));
         }
 
         // test 技能cd部分显示

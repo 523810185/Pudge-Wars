@@ -25,6 +25,22 @@ export default class Core
         this.m_pNetMgr = new NetMgr();
         this.m_pPoolMgr = new PoolMgr();
         this.m_pGameLogic = new GameLogic();
+
+        // 对某些单例进行注册或者需要的初始化
+        this.RegisterNodePool();
+    }
+
+    /**
+     * 注册需要的单位池
+     */
+    private static RegisterNodePool(): void 
+    {
+        this.m_pPoolMgr.RegisterPool("hookChain", "prefabs/hookChain", 1000);
+        this.m_pPoolMgr.RegisterPool("hookHead", "prefabs/hookHead", 30);
+        this.m_pPoolMgr.RegisterPool("Toast", "prefabs/Toast", 30);
+        this.m_pPoolMgr.RegisterPool("hpBar", "prefabs/hpBar", 30);
+        this.m_pPoolMgr.RegisterPool("things", "prefabs/things", 100);
+        this.m_pPoolMgr.RegisterPool("pudge", "prefabs/pudge", 30);
     }
 
     public static get GameLogic(): GameLogic 

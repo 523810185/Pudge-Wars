@@ -54,8 +54,8 @@ export class HookSkill implements BaseTicker
     private Init(): void 
     {
         /**获得单位池 */
-        this.m_stHookChainPool = Core.PoolMgr.GetHookChainPool();
-        this.m_stHookHeadPool = Core.PoolMgr.GetHookHeadPool();
+        this.m_stHookChainPool = Core.PoolMgr.GetPoolByName("hookChain");
+        this.m_stHookHeadPool = Core.PoolMgr.GetPoolByName("hookHead");
 
         this.m_stHookArray = [];
         this.m_stCanvas = cc.find('Canvas');

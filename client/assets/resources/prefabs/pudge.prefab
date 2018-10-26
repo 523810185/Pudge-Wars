@@ -12,7 +12,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "hero",
+    "_name": "pudge",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -97,7 +97,7 @@
     "_isTrimmedMode": true,
     "_state": 0,
     "_atlas": null,
-    "_id": "02r8vExKFKvJeJ9r4cpHc7"
+    "_id": "0eiY3SVCBNw5F6GYevyEAX"
   },
   {
     "__type__": "cc.PrefabInfo",

@@ -21,6 +21,8 @@ export class SkillMgr
     private m_arrSkillID: Array<number>;
     /**记录各技能id的技能是否是指向型技能 */
     private m_mapIsClickToSkill: Map<number, boolean>;
+    /**记录各技能id的图片资源url */
+    private m_mapSkillUrl: Map<number, string>;
     /**技能上限个数 */
     private MAX_SKILL_CNT: number = 3;
 
@@ -36,7 +38,9 @@ export class SkillMgr
         this.m_arrSkillBtn = new Array<SkillBtn>(3);
         this.m_arrSkillID = new Array<number>(3);
         this.m_mapIsClickToSkill = new Map<number, boolean>();
+        this.m_mapSkillUrl = new Map<number, string>();
         this.InitIsClickToMap();
+        this.InitSkillUrlMap();
 
         this.m_arrSkillID[0] = CoreConfig.SKILL_HOOK;
         this.m_arrSkillID[1] = CoreConfig.SKILL_NULL;
@@ -163,6 +167,7 @@ export class SkillMgr
             {
                 console.log("你的", i + 1, "号位置获得了", skillID);
                 this.m_arrSkillID[i] = skillID;
+                this.m_arrSkillBtn[i].SetSkillAvatar(this.m_mapSkillUrl[skillID]);
                 break;
             }
         }
@@ -174,6 +179,14 @@ export class SkillMgr
         // TODO ... 重构，从外部读表
         this.m_mapIsClickToSkill[CoreConfig.SKILL_HOOK] = true;
         this.m_mapIsClickToSkill[CoreConfig.SKILL_SPEED_UP] = false;
+    }
+
+    /**初始化技能的url集合 */
+    private InitSkillUrlMap(): void 
+    {
+        // TODO ... 重构，从外部读表
+        this.m_mapSkillUrl[CoreConfig.SKILL_HOOK] = "skill_hook";
+        this.m_mapSkillUrl[CoreConfig.SKILL_SPEED_UP] = "skill_speedUp";
     }
 
     /**
