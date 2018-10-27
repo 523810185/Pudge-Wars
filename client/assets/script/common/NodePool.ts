@@ -39,7 +39,10 @@ export class NodePool
     /**将节点归还单位池 */
     public CheckIn(node: cc.Node): void 
     {
+        // 在归还前node需要做必要的清空操作
         node.parent = null;
+        node.zIndex = 0;
+        node.opacity = 255;
         this.m_stPool.push(node);
     }
 }

@@ -4,6 +4,7 @@ import {eMoveType} from "./ActionMgr";
 import {eTickMessageType} from "../../core/NetMgr";
 import {ShowToast} from "../../common/Toast";
 import {eSkillStateNext} from "./SkillMgr";
+import {FloatNumHandler} from "../../common/FloatNumHandler";
 
 enum eClickState 
 {
@@ -46,8 +47,8 @@ export class PressMgr
         // 左下角为(0,0)
         let clickPos: cc.Vec2 = event.getLocation();
         // x，y都保留3位小数
-        clickPos.x = ((clickPos.x * 1000) >> 0) / 1000;
-        clickPos.y = ((clickPos.y * 1000) >> 0) / 1000;
+        clickPos.x = FloatNumHandler.PreservedTo(clickPos.x);
+        clickPos.y = FloatNumHandler.PreservedTo(clickPos.y);
         console.log("鼠标点击的位置是", clickPos, event.getLocation());
 
         /*if(event.getButton() == cc.Event.EventMouse.BUTTON_RIGHT)

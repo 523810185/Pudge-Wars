@@ -21,7 +21,7 @@ export class SkillBtn implements BaseTicker
         this.m_bInCD = false;
         this.m_iCDLength = 0;
         this.m_stSprite = this.m_stBtn.getComponent(cc.Sprite);
-        this.m_stBtn.zIndex = CoreConfig.UI_Z_INDEX;
+        this.m_stBtn.zIndex = CoreConfig.Z_INDEX_UI;
     }
 
     /**显示技能图标 */

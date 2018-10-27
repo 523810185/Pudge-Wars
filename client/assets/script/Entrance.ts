@@ -16,6 +16,8 @@ export default class Entrance extends cc.Component
     private m_stLogo: cc.Node;
     /**背景 */
     private m_stBackground: cc.Node;
+    /**默认的蓝色背景 */
+    private m_stDefaultBackground: cc.Node;
     /**游戏是否开始 */
     private m_bIsStart: boolean = false;
 
@@ -34,6 +36,7 @@ export default class Entrance extends cc.Component
         this.m_stBtnStartGame = this.canvas.getChildByName('btn_start');
         this.m_stLogo = this.canvas.getChildByName('logo');
         this.m_stBackground = this.canvas.getChildByName('background');
+        this.m_stDefaultBackground = this.canvas.getChildByName('default_background');
     }
 
     /**
@@ -69,6 +72,7 @@ export default class Entrance extends cc.Component
     {
         this.m_stLogo.active = false;
         this.m_stBtnStartGame.active = false;
+        this.m_stDefaultBackground.active = false;
     }
 
     /**
@@ -77,6 +81,7 @@ export default class Entrance extends cc.Component
     private ShowBattleBackground(): void 
     {
         this.m_stBackground.active = true;
+        this.m_stBackground.zIndex = CoreConfig.Z_INDEX_BACKGROUND;
     }
 
     /**

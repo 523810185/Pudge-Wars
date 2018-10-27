@@ -16,7 +16,8 @@ export class CoreConfig
     public static SKILL_SPEED_UP: number = 2;
 
     // UI层级
-    public static UI_Z_INDEX: number = 100;
+    public static Z_INDEX_UI: number = 100;
+    public static Z_INDEX_BACKGROUND: number = -100;
 
     // 服务器地址
     // public static SERVER_HOST: string = 'http://118.25.76.185:5000';
