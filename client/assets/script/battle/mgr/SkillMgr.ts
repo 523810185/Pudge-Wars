@@ -43,8 +43,8 @@ export class SkillMgr
         this.InitSkillUrlMap();
 
         this.m_arrSkillID[0] = CoreConfig.SKILL_HOOK;
-        this.m_arrSkillID[1] = CoreConfig.SKILL_NULL;
-        this.m_arrSkillID[2] = CoreConfig.SKILL_NULL;
+        this.m_arrSkillID[1] = CoreConfig.SKILL_FIRE_AROUND;
+        this.m_arrSkillID[2] = CoreConfig.SKILL_SPEED_UP;
 
         this.m_arrSkillBtn[0] = new SkillBtn(this.m_stCanvas.getChildByName('skill1'));
         this.m_arrSkillBtn[1] = new SkillBtn(this.m_stCanvas.getChildByName('skill2'));
@@ -179,6 +179,7 @@ export class SkillMgr
         // TODO ... 重构，从外部读表
         this.m_mapIsClickToSkill[CoreConfig.SKILL_HOOK] = true;
         this.m_mapIsClickToSkill[CoreConfig.SKILL_SPEED_UP] = false;
+        this.m_mapIsClickToSkill[CoreConfig.SKILL_FIRE_AROUND] = false
     }
 
     /**初始化技能的url集合 */
@@ -187,6 +188,7 @@ export class SkillMgr
         // TODO ... 重构，从外部读表
         this.m_mapSkillUrl[CoreConfig.SKILL_HOOK] = "skill_hook";
         this.m_mapSkillUrl[CoreConfig.SKILL_SPEED_UP] = "skill_speedUp";
+        this.m_mapSkillUrl[CoreConfig.SKILL_FIRE_AROUND] = "skill_fireAround";
     }
 
     /**

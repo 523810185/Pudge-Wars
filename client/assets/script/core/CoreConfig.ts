@@ -12,8 +12,9 @@ export class CoreConfig
     public static TEST_ANIME_ID: number = 2;
 
     public static SKILL_NULL: number = 0;
-    public static SKILL_HOOK: number = 1;
-    public static SKILL_SPEED_UP: number = 2;
+    public static SKILL_HOOK: number = 1; // 钩子
+    public static SKILL_SPEED_UP: number = 2; // 加速
+    public static SKILL_FIRE_AROUND: number = 3; // 灼烧
 
     // UI层级
     public static Z_INDEX_UI: number = 100;

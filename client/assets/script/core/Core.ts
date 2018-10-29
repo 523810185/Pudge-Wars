@@ -40,7 +40,7 @@ export default class Core
         this.m_pPoolMgr.RegisterPool("Toast", "prefabs/Toast", 30);
         this.m_pPoolMgr.RegisterPool("hpBar", "prefabs/hpBar", 30);
         this.m_pPoolMgr.RegisterPool("things", "prefabs/things", 100);
-        this.m_pPoolMgr.RegisterPool("pudge", "prefabs/pudge", 30);
+        this.m_pPoolMgr.RegisterPool("pudge", "prefabs/pudge", 100);
     }
 
     public static get GameLogic(): GameLogic 

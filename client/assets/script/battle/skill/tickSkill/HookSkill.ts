@@ -9,8 +9,8 @@ export class HookSkill implements BaseTicker
 {
     /**释放点 */
     private m_stStartPos: cc.Vec2;
-    /**释放技能的英雄 */
-    private m_stHero: cc.Node;
+    /**释放技能的单位 */
+    private m_stHero: Unit;
     /**方向向量的模 */
     private m_stRotPos: cc.Vec2;
     /**hookChain的集合 */
@@ -20,7 +20,7 @@ export class HookSkill implements BaseTicker
     /**是否处于返回期 */
     private m_bIsReturn: boolean = false;
     /**被钩到的单位 */
-    private m_stHookedNode: cc.Node = null;
+    private m_stHookedUnit: Unit = null;
     /**被钩到的单位的id */
     private m_stHookedUnitID: number = -1;
     /**钩子的单位池 */
@@ -38,12 +38,12 @@ export class HookSkill implements BaseTicker
     /**钩子的伤害，以后可能会有动态变化伤害的需求的可能性 */
     private m_iHookDamage: number = 30;
     /**钩子的判定范围 */
-    private m_iHookJudgeDis: number = 40;
+    private m_iHookJudgeDis: number = 15;
 
     /**舞台 */
     private m_stCanvas: cc.Node;
 
-    constructor(hero: cc.Node, startPos: cc.Vec2, rotPos: cc.Vec2) 
+    constructor(hero: Unit, startPos: cc.Vec2, rotPos: cc.Vec2) 
     {
         this.m_stHero = hero;
         this.m_stStartPos = startPos;
@@ -102,13 +102,13 @@ export class HookSkill implements BaseTicker
                 this.m_stHookHead.position = lastHookChain.position;
 
                 // 钩单位逻辑处理
-                if(!this.m_stHookedNode) 
+                if(!this.m_stHookedUnit) 
                 {
-                    this.m_stHookedNode = this.GetHookedHero(this.m_stHero, this.m_stHookHead);
+                    this.m_stHookedUnit = this.GetHookedHero(this.m_stHero.GetNode(), this.m_stHookHead);
                 }
                 else 
                 {
-                    this.m_stHookedNode.position = this.m_stHookHead.position;
+                    this.m_stHookedUnit.GetNode().position = this.m_stHookHead.position;
                 }
 
                 // 归还最后一节hookChain
@@ -124,9 +124,9 @@ export class HookSkill implements BaseTicker
                 // 归还最后一节hookChain
                 let lastHookChain = this.m_stHookArray.pop();
                 this.m_stHookHead.position = lastHookChain.position;
-                if(this.m_stHookedNode != null) 
+                if(this.m_stHookedUnit != null) 
                 {
-                    this.m_stHookedNode.position = lastHookChain.position;
+                    this.m_stHookedUnit.GetNode().position = lastHookChain.position;
                 }
                 this.m_stHookChainPool.CheckIn(lastHookChain);
             }
@@ -140,10 +140,10 @@ export class HookSkill implements BaseTicker
             }
 
             // 钩单位逻辑处理
-            if(this.m_stHookedNode == null) 
+            if(this.m_stHookedUnit == null) 
             {
-                this.m_stHookedNode = this.GetHookedHero(this.m_stHero, this.m_stHookHead);
-                if(this.m_stHookedNode != null) 
+                this.m_stHookedUnit = this.GetHookedHero(this.m_stHero.GetNode(), this.m_stHookHead);
+                if(this.m_stHookedUnit != null) 
                 {
                     this.m_bIsReturn = true;
                 }
@@ -151,29 +151,31 @@ export class HookSkill implements BaseTicker
             else 
             {
                 cc.warn("钩子技能逻辑出错啦！");
-                this.m_stHookedNode.position = this.m_stHookHead.position;
+                this.m_stHookedUnit.GetNode().position = this.m_stHookHead.position;
             }
         }
     }
 
     /**
-     * 得到被钩的节点
+     * 得到被钩的单位
      * @param hero 释放技能的单位
      * @param hookHead 钩头
      */
-    private GetHookedHero(hero: cc.Node, hookHead: cc.Node): cc.Node
+    private GetHookedHero(hero: cc.Node, hookHead: cc.Node): Unit
     {
-        let hookedNode: cc.Node = null;
+        let hookedUnit: Unit = null;
         let minDis: number = -1;
         Core.GameLogic.UnitMgr.VisitUnit((item: Unit, unitID: number) =>
         {
+            // 钩的条件：不是自己，并且单位的类型是英雄
             if(hero == item.GetNode() || item.Type != eUnitType.Hero)
             {
                 return;
             }
 
             let dis: number = item.GetNode().position.sub(hookHead.position).mag();
-            if(dis > this.m_iHookJudgeDis) 
+            // 钩的条件：范围满足
+            if(dis > this.m_iHookJudgeDis + item.CollisionSize) 
             {
                 return;
             }
@@ -181,16 +183,22 @@ export class HookSkill implements BaseTicker
             if(minDis < 0) 
             {
                 minDis = dis;
-                hookedNode = item.GetNode();
+                hookedUnit = item;
                 this.m_stHookedUnitID = unitID;
             }
             else if(minDis > dis) 
             {
                 minDis = dis;
-                hookedNode = item.GetNode();
+                hookedUnit = item;
             }
         });
-        return hookedNode;
+
+        // 如果被钩到的是自己，那么将被屏蔽一切操作
+        if(hookedUnit != null && hookedUnit == Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID)) 
+        {
+            Core.GameLogic.PressMgr.UnBindEvent();
+        }
+        return hookedUnit;
     }
 
     public IsFinished(): boolean 
@@ -202,10 +210,13 @@ export class HookSkill implements BaseTicker
     {
         this.m_stHookHeadPool.CheckIn(this.m_stHookHead);
         // TODO: 造成伤害应当不用跑帧消息
-        if(this.m_stHero == Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID).GetNode()) 
+        // 暂时只由技能释放者发送造成伤害的帧消息
+        if(this.m_stHero == Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID) &&
+            // 造成伤害的条件，不是同一个阵营的
+            this.m_stHookedUnit.Team != this.m_stHero.Team) 
         {
             // 造成伤害
-            if(this.m_stHookedNode) 
+            if(this.m_stHookedUnit) 
             {
                 let content = {
                     unitID: this.m_stHookedUnitID,
@@ -213,6 +224,12 @@ export class HookSkill implements BaseTicker
                 };
                 Core.NetMgr.SendTickMessage(eTickMessageType.HP_CHANGE, content);
             }
+        }
+
+        // 如果被钩到的是自己，那么将恢复操作
+        if(this.m_stHookedUnit != null && this.m_stHookedUnit == Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID)) 
+        {
+            Core.GameLogic.PressMgr.BindEvent();
         }
     }
 }

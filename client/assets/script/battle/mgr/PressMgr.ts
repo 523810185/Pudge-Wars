@@ -41,6 +41,15 @@ export class PressMgr
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.OnKeyDownHandler, this);
     }
 
+    /**
+     * 战斗界面取消绑定事件
+     */
+    public UnBindEvent(): void 
+    {
+        this.m_stCanvas.off(cc.Node.EventType.MOUSE_DOWN, this.OnClickDownHandler.bind(this));
+        cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.OnKeyDownHandler, this);
+    }
+
     /**处理鼠标点击事件 */
     private OnClickDownHandler(event): void 
     {
@@ -51,7 +60,7 @@ export class PressMgr
         clickPos.y = FloatNumHandler.PreservedTo(clickPos.y);
         console.log("鼠标点击的位置是", clickPos, event.getLocation());
 
-        /*if(event.getButton() == cc.Event.EventMouse.BUTTON_RIGHT)
+        if(event.getButton() == cc.Event.EventMouse.BUTTON_RIGHT)
         {
             let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
             let content = {
@@ -60,31 +69,32 @@ export class PressMgr
             };
             Core.NetMgr.SendTickMessage(eTickMessageType.MOVE, content);
         }
-        else */if(this.m_iClickState == eClickState.NONE) 
+        else  // 左键点击的处理
         {
-            return;
+            if(this.m_iClickState == eClickState.NONE) 
+            {
+                return;
+            }
+            else 
+            {
+                let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
+                let content = {
+                    btnID: this.m_iClickState,
+                    unitID: CoreConfig.MY_HERO_ID,
+                    skillID: Core.GameLogic.SkillMgr.GetSkillIDByBtnID(this.m_iClickState),
+                    pos: realPos
+                };
+                Core.NetMgr.SendTickMessage(eTickMessageType.SKILL, content);
+                // Core.GameLogic.ActionMgr.HeroSkill(CoreConfig.TEST_HERO_ID, CoreConfig.SKILL_HOOK, realPos);
+            }
+            this.m_iClickState = eClickState.NONE;
         }
-        else 
-        {
-            let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
-            let content = {
-                btnID: this.m_iClickState,
-                unitID: CoreConfig.MY_HERO_ID,
-                skillID: Core.GameLogic.SkillMgr.GetSkillIDByBtnID(this.m_iClickState),
-                pos: realPos
-            };
-            Core.NetMgr.SendTickMessage(eTickMessageType.SKILL, content);
-            // Core.GameLogic.ActionMgr.HeroSkill(CoreConfig.TEST_HERO_ID, CoreConfig.SKILL_HOOK, realPos);
-        }
-
-        this.m_iClickState = eClickState.NONE;
     }
 
     /**处理键盘按键事件 */
     private OnKeyDownHandler(event): void 
     {
         let content: any;
-        let nextState: eSkillStateNext;
         switch(event.keyCode) 
         {
             case cc.macro.KEY.w:

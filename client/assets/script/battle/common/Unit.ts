@@ -1,5 +1,6 @@
 import {HPBar} from "./HPBar";
 
+/**单位类型 */
 export enum eUnitType 
 {
     Hero = 0,
@@ -7,13 +8,22 @@ export enum eUnitType
     Other = 2
 }
 
+/**单位阵营 */
+export enum eUnitTeam
+{
+    Red = 0,
+    Blue = 1,
+    Other = 2
+}
+
 export class Unit 
 {
-    constructor(node: cc.Node, eType: eUnitType, showHPBar: boolean = true)  
+    constructor(node: cc.Node, eType: eUnitType, eTeam: eUnitTeam, showHPBar: boolean = true)  
     {
         this.m_stNode = node;
         this.m_eType = eType;
-        this.Init(10, 100);
+        this.m_eTeam = eTeam;
+        this.Init(5, 30, 100);
         // 设置hpBar
         if(showHPBar) 
         {
@@ -23,14 +33,18 @@ export class Unit
 
     /**节点本身 */
     private m_stNode: cc.Node;
-    /**节点类型 */
+    /**单位类型 */
     private m_eType: eUnitType;
+    /**单位阵营 */
+    private m_eTeam: eUnitTeam;
     /**移动速度 */
     private m_iSpeed: number;
     /**目前生命值 */
     private m_iNowHP: number;
     /**最大生命值 */
     private m_iMaxHP: number;
+    /**碰撞体积 */
+    private m_iCollisionSize: number;
     /**HPBar */
     private m_stHPBar: HPBar;
 
@@ -42,6 +56,16 @@ export class Unit
     public set Type(eType: eUnitType) 
     {
         this.m_eType = eType;
+    }
+
+    public get Team(): eUnitTeam
+    {
+        return this.m_eTeam;
+    }
+
+    public set Team(eTeam: eUnitTeam) 
+    {
+        this.m_eTeam = eTeam;
     }
 
     public get Speed(): number 
@@ -82,6 +106,16 @@ export class Unit
         this.m_iMaxHP = hp;
     }
 
+    public get CollisionSize(): number 
+    {
+        return this.m_iCollisionSize;
+    }
+
+    public set CollisionSize(collisionSize: number) 
+    {
+        this.m_iCollisionSize = collisionSize;
+    }
+
     /**得到单位节点 */
     public GetNode(): cc.Node 
     {
@@ -90,13 +124,15 @@ export class Unit
 
     /**
      * 初始化一些单位的属性值
-     * @param speed 移动速度，默认为10
+     * @param speed 移动速度，默认为5
+     * @param collisionSize 碰撞体积，默认为30
      * @param maxHP 最大生命值，默认为100
      * @param nowHP 当前生命值，默认为最大生命值
      */
-    public Init(speed: number, maxHP: number, nowHP: number = maxHP): Unit 
+    public Init(speed: number, collisionSize: number, maxHP: number, nowHP: number = maxHP): Unit 
     {
         this.m_iSpeed = speed;
+        this.m_iCollisionSize = collisionSize;
         this.m_iMaxHP = maxHP;
         this.m_iNowHP = nowHP;
         return this;

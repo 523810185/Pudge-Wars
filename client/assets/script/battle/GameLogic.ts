@@ -4,7 +4,7 @@ import {ActionMgr} from "./mgr/ActionMgr";
 import Core from "../core/Core";
 import {CoreConfig} from "../core/CoreConfig";
 import {SkillMgr} from "./mgr/SkillMgr";
-import {Unit, eUnitType} from "./common/Unit";
+import {Unit, eUnitType, eUnitTeam} from "./common/Unit";
 import {ThingMgr} from "./mgr/ThingMgr";
 
 export class GameLogic 
@@ -60,7 +60,7 @@ export class GameLogic
                 {
                     node.position = new cc.Vec2(200, 0);
                 }
-                this.m_pUnitMgr.InsertUnit(id, new Unit(node, eUnitType.Hero).Init(10, 100));
+                this.m_pUnitMgr.InsertUnit(id, new Unit(node, eUnitType.Hero, id == 0 ? eUnitTeam.Red : eUnitTeam.Blue).Init(5, 30, 100));
             }
             console.log("英雄已经被创建！");
         }
@@ -71,14 +71,14 @@ export class GameLogic
             console.log("test英雄已经被创建！");
             this.m_stCanvas.addChild(node);
             node.position = new cc.Vec2(0, 0);
-            this.m_pUnitMgr.InsertUnit(CoreConfig.MY_HERO_ID, new Unit(node, eUnitType.Hero).Init(10, 100));
+            this.m_pUnitMgr.InsertUnit(CoreConfig.MY_HERO_ID, new Unit(node, eUnitType.Hero, eUnitTeam.Red).Init(5, 30, 100));
 
             // --> 敌人
             node = Core.PoolMgr.GetPoolByName("pudge").CheckOut();
             console.log("test敌人已经被创建！");
             this.m_stCanvas.addChild(node);
             node.position = new cc.Vec2(Math.random() * CoreConfig.CANVAS_WIDTH / 2, Math.random() * CoreConfig.CANVAS_HEIGHT / 2);
-            this.m_pUnitMgr.InsertUnit(CoreConfig.TEST_ANIME_ID, new Unit(node, eUnitType.Hero).Init(10, 100));
+            this.m_pUnitMgr.InsertUnit(CoreConfig.TEST_ANIME_ID, new Unit(node, eUnitType.Hero, eUnitTeam.Blue).Init(5, 30, 100));
         }
 
         // test 技能cd部分显示

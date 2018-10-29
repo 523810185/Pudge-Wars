@@ -10,9 +10,9 @@ export class SpeedUpSkill implements BaseTicker
     /**附加的移动速度 */
     private readonly ADD_SPEED: number = 10;
     /**残影的数目 */
-    private readonly SHADOW_CNT: number = 8;
+    private readonly SHADOW_CNT: number = 10;
     /**每隔多少帧放置一个阴影 */
-    private readonly DELTA_TICK_NUMBER: number = 10;
+    private readonly DELTA_TICK_NUMBER: number = 3;
     /**保存过去位置的帧数 */
     private readonly POS_BEFORE_CNT: number = this.SHADOW_CNT * this.DELTA_TICK_NUMBER;
 
@@ -55,7 +55,7 @@ export class SpeedUpSkill implements BaseTicker
         {
             let node: cc.Node = Core.PoolMgr.GetPoolByName("pudge").CheckOut();
             canvas.addChild(node);
-            node.opacity = 255 / (i + 2);
+            node.opacity = 255 * (1 - (i + 1) / this.SHADOW_CNT);
             node.zIndex = this.m_stUnit.GetNode().zIndex - 10; // 保证不覆盖技能释放者
             node.position = nowPos;
             this.m_arrShadow.push(node);

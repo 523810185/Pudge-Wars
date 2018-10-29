@@ -143,10 +143,10 @@ export class NetMgr
         else if(head == eTickMessageType.MOVE) 
         {
             let unitID = content.unitID;
-            let moveType = content.moveType;
-            Core.GameLogic.ActionMgr.HeroMove(unitID, moveType);
-            // let endPos = new cc.Vec2(content.endPos.x, content.endPos.y);
-            // Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
+            // let moveType = content.moveType;
+            // Core.GameLogic.ActionMgr.HeroMove(unitID, moveType);
+            let endPos = new cc.Vec2(content.endPos.x, content.endPos.y);
+            Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
         }
         else if(head == eTickMessageType.HP_CHANGE) 
         {

@@ -94,10 +94,10 @@ export class TickMgr
         for(let content of this.m_stArrForMove) 
         {
             let unitID = content.unitID;
-            let moveType = content.moveType;
-            Core.GameLogic.ActionMgr.HeroMove(unitID, moveType);
-            // let endPos = new cc.Vec2(content.endPos.x, content.endPos.y);
-            // Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
+            // let moveType = content.moveType;
+            // Core.GameLogic.ActionMgr.HeroMove(unitID, moveType);
+            let endPos = new cc.Vec2(content.endPos.x, content.endPos.y);
+            Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
         }
 
         // 非帧更新（不论单机还是联机都要使用的部分）
