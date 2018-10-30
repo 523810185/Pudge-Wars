@@ -1,6 +1,8 @@
 import {SkillBtn} from "../skill/SkillBtn";
 import Core from "../../core/Core";
 import {CoreConfig} from "../../core/CoreConfig";
+import {Unit, eUnitType} from "../common/Unit";
+import {FloatNumHandler} from "../../common/FloatNumHandler";
 
 /**返回该技能下一步需要做什么 */
 export enum eSkillStateNext
@@ -19,10 +21,14 @@ export class SkillMgr
     private m_arrSkillBtn: Array<SkillBtn>;
     /**各个技能对应的技能id是多少 */
     private m_arrSkillID: Array<number>;
-    /**记录各技能id的技能是否是指向型技能 */
-    private m_mapIsClickToSkill: Map<number, boolean>;
+    /**记录各技能id的技能的指向型信息，0为非点击型技能，1为非指向型技能，2为指向型技能 */
+    private m_mapSkillClickInfo: Map<number, number>;
+    /**记录各技能id的技能“要求的单位的状态掩码”，如果是-1表示是非指向型技能 */
+    private m_mapSkillStateMask: Map<number, number>;
     /**记录各技能id的图片资源url */
     private m_mapSkillUrl: Map<number, string>;
+    /**ClickMgr */
+    private m_stClickMgr: ClickMgr;
     /**技能上限个数 */
     private MAX_SKILL_CNT: number = 3;
 
@@ -37,9 +43,12 @@ export class SkillMgr
 
         this.m_arrSkillBtn = new Array<SkillBtn>(3);
         this.m_arrSkillID = new Array<number>(3);
-        this.m_mapIsClickToSkill = new Map<number, boolean>();
+        this.m_mapSkillClickInfo = new Map<number, number>();
+        this.m_mapSkillStateMask = new Map<number, number>();
         this.m_mapSkillUrl = new Map<number, string>();
-        this.InitIsClickToMap();
+        this.m_stClickMgr = new ClickMgr();
+        this.InitSkillClickInfo();
+        this.InitSkillStateMask();
         this.InitSkillUrlMap();
 
         this.m_arrSkillID[0] = CoreConfig.SKILL_HOOK;
@@ -113,6 +122,26 @@ export class SkillMgr
     }
 
     /**
+     * 返回某个点击型技能点击以后的结果。
+     * 返回的结果若为ACCEPT_CLICK_OPERATION，如果指向的单位ID为-1，表示为非指向型技能
+     * @param btnID 第id个技能
+     * @param clickTo 点击的位置
+     */
+    public GetSkillClickResult(btnID: number, clickTo: cc.Vec2): ClickResultStruct
+    {
+        let realBtnID = btnID - 1;
+        let skillID = this.m_arrSkillID[realBtnID];
+        if(this.m_mapSkillClickInfo[skillID] == 1) 
+        {
+            return new ClickResultStruct(eClickResult.ACCEPT_CLICK_OPERATION, -1);
+        }
+        else 
+        {
+            return this.m_stClickMgr.SkillClickTo(this.m_mapSkillStateMask[skillID], clickTo);
+        }
+    }
+
+    /**
      * 返回某个技能被按键响应以后的状态
      * @param btnID 第id个技能
      */
@@ -174,12 +203,21 @@ export class SkillMgr
     }
 
     /**初始化技能是否是指向技能的表 */
-    private InitIsClickToMap(): void 
+    private InitSkillClickInfo(): void 
     {
         // TODO ... 重构，从外部读表
-        this.m_mapIsClickToSkill[CoreConfig.SKILL_HOOK] = true;
-        this.m_mapIsClickToSkill[CoreConfig.SKILL_SPEED_UP] = false;
-        this.m_mapIsClickToSkill[CoreConfig.SKILL_FIRE_AROUND] = false
+        this.m_mapSkillClickInfo[CoreConfig.SKILL_HOOK] = 1;
+        this.m_mapSkillClickInfo[CoreConfig.SKILL_SPEED_UP] = 0;
+        this.m_mapSkillClickInfo[CoreConfig.SKILL_FIRE_AROUND] = 0;
+    }
+
+    /**初始化各技能id的技能“要求的单位的状态掩码” */
+    private InitSkillStateMask(): void 
+    {
+        // TODO ... 重构，从外部读表
+        this.m_mapSkillStateMask[CoreConfig.SKILL_HOOK] = -1;
+        this.m_mapSkillStateMask[CoreConfig.SKILL_SPEED_UP] = -1;
+        this.m_mapSkillStateMask[CoreConfig.SKILL_FIRE_AROUND] = -1;
     }
 
     /**初始化技能的url集合 */
@@ -197,6 +235,147 @@ export class SkillMgr
      */
     private IsClickToSkill(skillID: number): boolean 
     {
-        return this.m_mapIsClickToSkill.has(skillID) ? false : this.m_mapIsClickToSkill[skillID];
+        return this.m_mapSkillClickInfo.has(skillID) ? false : this.m_mapSkillClickInfo[skillID];
+    }
+}
+
+export enum eClickResult 
+{
+    ACCEPT_CLICK_OPERATION = 0, // 可以被执行的点击操作
+    NEED_CHOOSE_UNIT = 1, // 请选择单位
+    CLICK_MAGIC_IMMUNITY_UNIT = 2, // 选择了魔免单位
+    CLICK_MYSELF = 3,             // 不能点击自己而选择了自己
+    CLICK_FRIENDLY_FORCE = 4,     // 点击了友军
+    CLICK_ENEMY = 5,              // 点击了敌军
+    CLICK_BUILDING = 6,           // 点击了建筑
+}
+
+export class ClickResultStruct 
+{
+    public m_eClickResult: eClickResult;
+    public m_stClickUnitID: number;
+    constructor(clickResult: eClickResult = eClickResult.ACCEPT_CLICK_OPERATION, clickUnitID: number = -1) 
+    {
+        this.m_eClickResult = clickResult;
+        this.m_stClickUnitID = clickUnitID;
+    }
+}
+
+// 隶属于SkillMgr的管理者
+class ClickMgr
+{
+    constructor()
+    {
+        this.Init();
+    }
+
+    private Init(): void 
+    {
+
+    }
+
+    /**
+     * 技能指向了某个位置，寻找指定要求的单位，返回点击的结果
+     * @param unitStateMask 寻找要求的单位的状态掩码，从左到右的二进制含义分别表示：
+     *         是否可以选择魔免单位，是否可以选择建筑单位，是否可以选择敌军单位，是否可以选择友军单位，
+     *         是否可以选择自己 
+     * @param clickPos 点击的位置
+     */
+    public SkillClickTo(unitStateMask: number, clickPos: cc.Vec2): ClickResultStruct 
+    {
+        let result: ClickResultStruct = new ClickResultStruct();
+        let unitArray: Array<number> = new Array<number>();
+        Core.GameLogic.UnitMgr.VisitUnit((unit: Unit, unitID: number) =>
+        {
+            let dis = unit.GetNode().position.sub(clickPos).mag();
+            if(dis <= unit.CollisionSize) 
+            {
+                unitArray.push(unitID);
+            }
+        });
+        if(unitArray.length == 0) 
+        {
+            result.m_eClickResult = eClickResult.NEED_CHOOSE_UNIT;
+        }
+        else if(unitArray.length == 1) 
+        {
+            result.m_eClickResult = this.GetClickResult(unitStateMask, this.GetUnitByID(unitArray[0]));
+            if(result.m_eClickResult == eClickResult.ACCEPT_CLICK_OPERATION) 
+            {
+                result.m_stClickUnitID = unitArray[0];
+            }
+        }
+        else 
+        {
+            // 按照距离从大到小排序
+            unitArray.sort((A: number, B: number) =>
+            {
+                let disA = this.GetUnitByID(A).GetNode().position.sub(clickPos).mag();
+                let disB = this.GetUnitByID(B).GetNode().position.sub(clickPos).mag();
+                disA = FloatNumHandler.PreservedTo(disA);
+                disB = FloatNumHandler.PreservedTo(disB);
+                if(disA == disB) return 0;
+                if(disA < disB) return 1;
+                return -1;
+                // TODO ... 待测试
+            });
+
+            // 寻找最近的一个符合的单位
+            let ansUnitID = -1;
+            for(let unitID of unitArray) 
+            {
+                let res = this.GetClickResult(unitStateMask, this.GetUnitByID(unitID));
+                if(res == eClickResult.ACCEPT_CLICK_OPERATION) 
+                {
+                    ansUnitID = unitID;
+                }
+                else if(ansUnitID == -1) // 没有符合的单位，以最近的一个单位的错误返回
+                {
+                    result.m_eClickResult = res;
+                }
+            }
+            if(ansUnitID != -1) 
+            {
+                result.m_eClickResult = eClickResult.ACCEPT_CLICK_OPERATION;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 返回点击结果
+     * @param unitStateMask 要求的掩码
+     * @param unit 判定单位
+     */
+    private GetClickResult(unitStateMask: number, unit: Unit): eClickResult
+    {
+        let result: eClickResult = eClickResult.ACCEPT_CLICK_OPERATION;
+        let Myself = Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID);
+        if(((unitStateMask >> 0) & 1) == 0 && unit == Myself) 
+        {
+            result = eClickResult.CLICK_MYSELF;
+        }
+        else if(((unitStateMask >> 1) & 1) == 0 && unit.Team == Myself.Team) 
+        {
+            result = eClickResult.CLICK_FRIENDLY_FORCE;
+        }
+        else if(((unitStateMask >> 2) & 1) == 0 && unit.Team != Myself.Team) 
+        {
+            result = eClickResult.CLICK_ENEMY;
+        }
+        else if(((unitStateMask >> 3) & 1) == 0 && unit.Type == eUnitType.Building) 
+        {
+            result = eClickResult.CLICK_FRIENDLY_FORCE;
+        }
+        else if(((unitStateMask >> 4) & 1) == 0 && unit.IsMagicImmunity) 
+        {
+            result = eClickResult.CLICK_MAGIC_IMMUNITY_UNIT;
+        }
+        return result;
+    }
+
+    private GetUnitByID(unitID: number): Unit 
+    {
+        return Core.GameLogic.UnitMgr.GetUnitByID(unitID);
     }
 }

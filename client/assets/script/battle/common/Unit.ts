@@ -45,6 +45,8 @@ export class Unit
     private m_iMaxHP: number;
     /**碰撞体积 */
     private m_iCollisionSize: number;
+    /**是否魔免 */
+    private m_bIsMagicImmunity: boolean;
     /**HPBar */
     private m_stHPBar: HPBar;
 
@@ -116,6 +118,16 @@ export class Unit
         this.m_iCollisionSize = collisionSize;
     }
 
+    public get IsMagicImmunity(): boolean 
+    {
+        return this.m_bIsMagicImmunity;
+    }
+
+    public set IsMagicImmunity(isMagicImmunity: boolean) 
+    {
+        this.m_bIsMagicImmunity = isMagicImmunity;
+    }
+
     /**得到单位节点 */
     public GetNode(): cc.Node 
     {
@@ -128,13 +140,15 @@ export class Unit
      * @param collisionSize 碰撞体积，默认为30
      * @param maxHP 最大生命值，默认为100
      * @param nowHP 当前生命值，默认为最大生命值
+     * @param isMagicImmunity 是否魔免，默认不是魔免
      */
-    public Init(speed: number, collisionSize: number, maxHP: number, nowHP: number = maxHP): Unit 
+    public Init(speed: number, collisionSize: number, maxHP: number, nowHP: number = maxHP, isMagicImmunity: boolean = false): Unit 
     {
         this.m_iSpeed = speed;
         this.m_iCollisionSize = collisionSize;
         this.m_iMaxHP = maxHP;
         this.m_iNowHP = nowHP;
+        this.m_bIsMagicImmunity = isMagicImmunity;
         return this;
     }
 

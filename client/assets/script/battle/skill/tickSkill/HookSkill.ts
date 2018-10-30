@@ -196,7 +196,7 @@ export class HookSkill implements BaseTicker
         // 如果被钩到的是自己，那么将被屏蔽一切操作
         if(hookedUnit != null && hookedUnit == Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID)) 
         {
-            Core.GameLogic.PressMgr.UnBindEvent();
+            Core.GameLogic.OperationMgr.UnBindEvent();
         }
         return hookedUnit;
     }
@@ -213,7 +213,7 @@ export class HookSkill implements BaseTicker
         // 暂时只由技能释放者发送造成伤害的帧消息
         if(this.m_stHero == Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID) &&
             // 造成伤害的条件，不是同一个阵营的
-            this.m_stHookedUnit.Team != this.m_stHero.Team) 
+            this.m_stHookedUnit != null && this.m_stHookedUnit.Team != this.m_stHero.Team) 
         {
             // 造成伤害
             if(this.m_stHookedUnit) 
@@ -229,7 +229,7 @@ export class HookSkill implements BaseTicker
         // 如果被钩到的是自己，那么将恢复操作
         if(this.m_stHookedUnit != null && this.m_stHookedUnit == Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID)) 
         {
-            Core.GameLogic.PressMgr.BindEvent();
+            Core.GameLogic.OperationMgr.BindEvent();
         }
     }
 }

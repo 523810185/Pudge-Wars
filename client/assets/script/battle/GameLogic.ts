@@ -1,4 +1,4 @@
-import {PressMgr} from "./mgr/PressMgr";
+import {OperationMgr} from "./mgr/OperationMgr";
 import {UnitMgr} from "./mgr/UnitMgr";
 import {ActionMgr} from "./mgr/ActionMgr";
 import Core from "../core/Core";
@@ -11,8 +11,8 @@ export class GameLogic
 {
     /**舞台，也是所有物体的父节点 */
     private m_stCanvas: cc.Node;
-    /**点击事件管理者 */
-    private m_pPressMgr: PressMgr;
+    /**玩家游戏内操作事件管理者 */
+    private m_pOperationMgr: OperationMgr;
     /**所有的活物体管理者 */
     private m_pUnitMgr: UnitMgr;
     /**动作管理者 */
@@ -33,7 +33,7 @@ export class GameLogic
         this.m_stCanvas = cc.find('Canvas');
 
         // 初始化管理者
-        this.m_pPressMgr = new PressMgr();
+        this.m_pOperationMgr = new OperationMgr();
         this.m_pUnitMgr = new UnitMgr();
         this.m_pActionMgr = new ActionMgr();
         this.m_pSkillMgr = new SkillMgr();
@@ -43,7 +43,7 @@ export class GameLogic
     /**初始化游戏逻辑 */
     public StartGame(args?: any): void 
     {
-        this.m_pPressMgr.BindEvent();
+        this.m_pOperationMgr.BindEvent();
 
         if(args) 
         {
@@ -86,9 +86,9 @@ export class GameLogic
         this.m_pSkillMgr.SetCDLength(1, 3);
     }
 
-    public get PressMgr(): PressMgr 
+    public get OperationMgr(): OperationMgr 
     {
-        return this.m_pPressMgr;
+        return this.m_pOperationMgr;
     }
     public get UnitMgr(): UnitMgr
     {
