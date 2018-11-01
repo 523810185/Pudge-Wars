@@ -10,7 +10,7 @@ export class ResourceMgr
     /**
      * 加载资源
      * @param path url路径，从resources下一级开始 
-     * @param callback 执行的回调函数
+     * @param callback 执行的回调函数，回调的参数为(res)
      */
     public LoadRes(path: string, callback: Function): void 
     {

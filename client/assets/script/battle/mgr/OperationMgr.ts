@@ -37,7 +37,7 @@ export class OperationMgr
      */
     public BindEvent(): void 
     {
-        this.m_stCanvas.on(cc.Node.EventType.MOUSE_DOWN, this.OnClickDownHandler.bind(this));
+        this.m_stCanvas.on(cc.Node.EventType.MOUSE_DOWN, this.OnClickDownHandler, this);
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.OnKeyDownHandler, this);
     }
 
@@ -46,7 +46,7 @@ export class OperationMgr
      */
     public UnBindEvent(): void 
     {
-        this.m_stCanvas.off(cc.Node.EventType.MOUSE_DOWN, this.OnClickDownHandler.bind(this));
+        this.m_stCanvas.off(cc.Node.EventType.MOUSE_DOWN, this.OnClickDownHandler, this);
         cc.systemEvent.off(cc.SystemEvent.EventType.KEY_DOWN, this.OnKeyDownHandler, this);
     }
 

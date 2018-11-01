@@ -7,6 +7,7 @@ import {MoveToSkill} from "../skill/tickSkill/MoveToSkill";
 import {BaseTicker} from "../../common/BaseTicker";
 import {FloatNumHandler} from "../../common/FloatNumHandler";
 import {FireAroundSkill} from "../skill/tickSkill/FireAroundSkill";
+import {IceDartScatterSkill} from "../skill/commonSkill/IceDartScatterSkill";
 
 /**准备被废弃的移动方案 */
 export enum eMoveType
@@ -113,6 +114,10 @@ export class ActionMgr
         {
             this.SkillFireAround(heroID);
         }
+        else if(skillID == CoreConfig.SKILL_ICE_DART_SCATTER) 
+        {
+            this.SkillIceDartScatter(heroID, pos);
+        }
         else 
         {
             console.log(heroID, "释放的技能为", skillID);
@@ -141,6 +146,18 @@ export class ActionMgr
 
         let ticker = new HookSkill(this.GetUnitByID(heroID), skillPos, vec);
         Core.TickMgr.AddTicker(ticker);
+    }
+
+    /**
+     * 冰箭散射技能
+     */
+    private SkillIceDartScatter(unitID: number, pos: cc.Vec2): void 
+    {
+        let unit = this.GetUnitByID(unitID);
+        let skillPos = unit.GetNode().position; // 释放技能者的位置
+        let vec = pos.sub(skillPos).normalize();
+
+        new IceDartScatterSkill(unit, vec);
     }
 
     /**
@@ -200,6 +217,7 @@ class MoveMgr implements BaseTicker
 
     Update(): void 
     {
+        let removeArray = new Array<number>();
         this.m_mapMoveUnits.forEach((moveTo: cc.Vec2, unitID: number) =>
         {
             let unit = Core.GameLogic.UnitMgr.GetUnitByID(unitID);
@@ -212,6 +230,11 @@ class MoveMgr implements BaseTicker
             {
                 node.rotation = this.CalcAngle(moveTo.sub(node.position));
             }
+            else 
+            {
+                removeArray.push(unitID);
+                return;
+            }
             // 做出位移
             if(dis <= unit.Speed) 
             {
@@ -222,6 +245,11 @@ class MoveMgr implements BaseTicker
                 node.position = node.position.add(moveTo.sub(node.position).normalize().mul(unit.Speed));
             }
         });
+
+        for(let unitID of removeArray) 
+        {
+            this.m_mapMoveUnits.delete(unitID);
+        }
     }
 
     IsFinished(): boolean 

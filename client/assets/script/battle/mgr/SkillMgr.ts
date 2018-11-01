@@ -52,7 +52,7 @@ export class SkillMgr
         this.InitSkillUrlMap();
 
         this.m_arrSkillID[0] = CoreConfig.SKILL_HOOK;
-        this.m_arrSkillID[1] = CoreConfig.SKILL_FIRE_AROUND;
+        this.m_arrSkillID[1] = CoreConfig.SKILL_ICE_DART_SCATTER;
         this.m_arrSkillID[2] = CoreConfig.SKILL_SPEED_UP;
 
         this.m_arrSkillBtn[0] = new SkillBtn(this.m_stCanvas.getChildByName('skill1'));
@@ -209,6 +209,7 @@ export class SkillMgr
         this.m_mapSkillClickInfo[CoreConfig.SKILL_HOOK] = 1;
         this.m_mapSkillClickInfo[CoreConfig.SKILL_SPEED_UP] = 0;
         this.m_mapSkillClickInfo[CoreConfig.SKILL_FIRE_AROUND] = 0;
+        this.m_mapSkillClickInfo[CoreConfig.SKILL_ICE_DART_SCATTER] = 1;
     }
 
     /**初始化各技能id的技能“要求的单位的状态掩码” */
@@ -218,15 +219,18 @@ export class SkillMgr
         this.m_mapSkillStateMask[CoreConfig.SKILL_HOOK] = -1;
         this.m_mapSkillStateMask[CoreConfig.SKILL_SPEED_UP] = -1;
         this.m_mapSkillStateMask[CoreConfig.SKILL_FIRE_AROUND] = -1;
+        this.m_mapSkillStateMask[CoreConfig.SKILL_ICE_DART_SCATTER] = -1;
     }
 
     /**初始化技能的url集合 */
     private InitSkillUrlMap(): void 
     {
         // TODO ... 重构，从外部读表
+        this.m_mapSkillUrl[CoreConfig.SKILL_NULL] = "skill_null";
         this.m_mapSkillUrl[CoreConfig.SKILL_HOOK] = "skill_hook";
         this.m_mapSkillUrl[CoreConfig.SKILL_SPEED_UP] = "skill_speedUp";
         this.m_mapSkillUrl[CoreConfig.SKILL_FIRE_AROUND] = "skill_fireAround";
+        this.m_mapSkillUrl[CoreConfig.SKILL_ICE_DART_SCATTER] = "skill_iceDartScatter";
     }
 
     /**
