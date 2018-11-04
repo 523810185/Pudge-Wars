@@ -10,6 +10,7 @@ import {FireAroundSkill} from "../skill/tickSkill/FireAroundSkill";
 import {IceDartScatterSkill} from "../skill/commonSkill/IceDartScatterSkill";
 import {IceWind} from "../skill/commonSkill/IceWindSkill";
 import {FlashAwaySkill} from "../skill/tickSkill/FlashAwaySkill";
+import {ThunderStrikeSkill} from "../skill/tickSkill/ThunderStrikeSkill";
 
 /**准备被废弃的移动方案 */
 export enum eMoveType
@@ -131,6 +132,10 @@ export class ActionMgr
         {
             this.SkillFlashAway(heroID, pos);
         }
+        else if(skillID == CoreConfig.SKILL_THUNDER_STRIKE) 
+        {
+            this.SkillThunderStrike(heroID, pos);
+        }
         else 
         {
             console.log(heroID, "释放的技能为", skillID);
@@ -195,6 +200,13 @@ export class ActionMgr
     private SkillFlashAway(heroID: number, pos: cc.Vec2): void 
     {
         let ticker = new FlashAwaySkill(this.GetUnitByID(heroID), pos);
+        Core.TickMgr.AddTicker(ticker);
+    }
+
+    /**雷霆一击技能 */
+    private SkillThunderStrike(heroID: number, pos: cc.Vec2): void 
+    {
+        let ticker = new ThunderStrikeSkill(this.GetUnitByID(heroID), pos);
         Core.TickMgr.AddTicker(ticker);
     }
 

@@ -60,7 +60,7 @@ export class SkillMgr
         this.InitSkillCDLengthMap();
 
         this.m_arrSkillID[0] = CoreConfig.SKILL_HOOK;
-        this.m_arrSkillID[1] = CoreConfig.SKILL_NULL;
+        this.m_arrSkillID[1] = CoreConfig.SKILL_THUNDER_STRIKE;
         this.m_arrSkillID[2] = CoreConfig.SKILL_NULL;
 
         this.m_arrSkillBtn[0] = new SkillBtn(this.m_stCanvas.getChildByName('skill1'));
