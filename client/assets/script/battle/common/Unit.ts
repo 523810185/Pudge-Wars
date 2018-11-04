@@ -18,6 +18,9 @@ export enum eUnitTeam
 
 export class Unit 
 {
+    /**生命值变化的回调函数集合 */
+    private m_mapHPChangeCallback: Map<any, Function>;
+
     constructor(node: cc.Node, eType: eUnitType, eTeam: eUnitTeam, showHPBar: boolean = true)  
     {
         this.m_stNode = node;
@@ -29,6 +32,7 @@ export class Unit
         {
             this.m_stHPBar = new HPBar(this);
         }
+        this.m_mapHPChangeCallback = new Map<any, Function>();
     }
 
     /**节点本身 */
@@ -87,12 +91,23 @@ export class Unit
 
     public set NowHP(hp: number) 
     {
+        let preHP = this.m_iNowHP;
         this.m_iNowHP = hp;
+        // 处理生命溢出
         if(this.m_iNowHP > this.m_iMaxHP)
         {
             this.m_iNowHP = this.m_iMaxHP;
         }
-        else if(this.m_iNowHP <= 0) 
+        let hpChange = this.m_iNowHP - preHP;
+
+        // callback
+        this.m_mapHPChangeCallback.forEach((callback: Function, binder: any) =>
+        {
+            callback(hpChange);
+        });
+
+        // 处理死亡
+        if(this.m_iNowHP <= 0) 
         {
             this.Die();
         }
@@ -126,6 +141,33 @@ export class Unit
     public set IsMagicImmunity(isMagicImmunity: boolean) 
     {
         this.m_bIsMagicImmunity = isMagicImmunity;
+    }
+
+    public get IsAlive(): boolean 
+    {
+        return this.m_iNowHP > 0;
+    }
+
+    /**
+     * 增加一个生命值变化的监听，以在生命值发生变化时回调
+     * @param callback 回调函数，返回参数为(hpChange: number)
+     * @param binder 作用域
+     */
+    public AddHPChangeListener(callback: Function, binder: any): void 
+    {
+        this.m_mapHPChangeCallback.set(binder, callback);
+    }
+
+    /**
+     * 取消一个监听
+     * @param binder 作用域 
+     */
+    public RemoveHPChangeListener(binder: any): void 
+    {
+        if(this.m_mapHPChangeCallback.has(binder)) 
+        {
+            this.m_mapHPChangeCallback.delete(binder);
+        }
     }
 
     /**得到单位节点 */

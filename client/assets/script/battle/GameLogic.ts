@@ -71,7 +71,7 @@ export class GameLogic
             console.log("test英雄已经被创建！");
             this.m_stCanvas.addChild(node);
             node.position = new cc.Vec2(0, 0);
-            this.m_pUnitMgr.InsertUnit(CoreConfig.MY_HERO_ID, new Unit(node, eUnitType.Hero, eUnitTeam.Red).Init(5, 30, 100));
+            this.m_pUnitMgr.InsertUnit(CoreConfig.MY_HERO_ID, new Unit(node, eUnitType.Hero, eUnitTeam.Red).Init(5, 30, 100, 10));
 
             // --> 敌人
             node = Core.PoolMgr.GetPoolByName("pudge").CheckOut();
@@ -83,7 +83,7 @@ export class GameLogic
 
         // test 技能cd部分显示
         this.m_pSkillMgr.Awake();
-        this.m_pSkillMgr.SetCDLength(1, 3);
+        // this.m_pSkillMgr.SetCDLength(1, 3);
     }
 
     public get OperationMgr(): OperationMgr 

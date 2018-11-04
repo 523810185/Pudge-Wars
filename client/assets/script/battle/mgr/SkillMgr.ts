@@ -27,6 +27,10 @@ export class SkillMgr
     private m_mapSkillStateMask: Map<number, number>;
     /**记录各技能id的图片资源url */
     private m_mapSkillUrl: Map<number, string>;
+    /**记录各技能使用次数 */
+    private m_mapSkillUseCnt: Map<number, number>;
+    /**记录各技能cd长短 */
+    private m_mapSkillCDLength: Map<number, number>;
     /**ClickMgr */
     private m_stClickMgr: ClickMgr;
     /**技能上限个数 */
@@ -41,19 +45,23 @@ export class SkillMgr
     {
         this.m_stCanvas = cc.find("Canvas");
 
-        this.m_arrSkillBtn = new Array<SkillBtn>(3);
-        this.m_arrSkillID = new Array<number>(3);
+        this.m_arrSkillBtn = new Array<SkillBtn>(this.MAX_SKILL_CNT);
+        this.m_arrSkillID = new Array<number>(this.MAX_SKILL_CNT);
         this.m_mapSkillClickInfo = new Map<number, number>();
         this.m_mapSkillStateMask = new Map<number, number>();
         this.m_mapSkillUrl = new Map<number, string>();
+        this.m_mapSkillUseCnt = new Map<number, number>();
+        this.m_mapSkillCDLength = new Map<number, number>();
         this.m_stClickMgr = new ClickMgr();
         this.InitSkillClickInfo();
         this.InitSkillStateMask();
         this.InitSkillUrlMap();
+        this.InitSkillUseCntMap();
+        this.InitSkillCDLengthMap();
 
         this.m_arrSkillID[0] = CoreConfig.SKILL_HOOK;
-        this.m_arrSkillID[1] = CoreConfig.SKILL_ICE_DART_SCATTER;
-        this.m_arrSkillID[2] = CoreConfig.SKILL_SPEED_UP;
+        this.m_arrSkillID[1] = CoreConfig.SKILL_NULL;
+        this.m_arrSkillID[2] = CoreConfig.SKILL_NULL;
 
         this.m_arrSkillBtn[0] = new SkillBtn(this.m_stCanvas.getChildByName('skill1'));
         this.m_arrSkillBtn[1] = new SkillBtn(this.m_stCanvas.getChildByName('skill2'));
@@ -63,9 +71,13 @@ export class SkillMgr
     /**将技能的按钮显示出来 */
     public Awake(): void 
     {
-        for(let item of this.m_arrSkillBtn) 
+        for(let i = 0; i < this.MAX_SKILL_CNT; i++) 
         {
+            let item = this.m_arrSkillBtn[i];
+            let skillID = this.m_arrSkillID[i];
+            item.SetSkillAvatar(this.m_mapSkillUrl[skillID]);
             item.Show();
+            item.SetUseCnt(this.m_mapSkillUseCnt[skillID], this.m_mapSkillCDLength[skillID]);
         }
 
         // 将cd计时器放入TickMgr中
@@ -75,15 +87,15 @@ export class SkillMgr
         }
     }
 
-    /**
-     * 设置第id个技能的cd长短
-     * @param btnID 技能按钮的序号
-     * @param cdLength cd长度
-     */
-    public SetCDLength(btnID: number, cdLength: number): void 
-    {
-        this.m_arrSkillBtn[btnID - 1].CDLength = cdLength;
-    }
+    // /**
+    //  * 设置第id个技能的cd长短
+    //  * @param btnID 技能按钮的序号
+    //  * @param cdLength cd长度
+    //  */
+    // public SetCDLength(btnID: number, cdLength: number): void 
+    // {
+    //     this.m_arrSkillBtn[btnID - 1].CDLength = cdLength;
+    // }
 
     /**
      * 设置第id个技能进入cd
@@ -91,7 +103,14 @@ export class SkillMgr
      */
     public GoInCD(btnID: number): void 
     {
-        this.m_arrSkillBtn[btnID - 1].GoInCD();
+        let realBtnID: number = btnID - 1;
+        let useUp = this.m_arrSkillBtn[realBtnID].GoInCD();
+        if(useUp == true) // 次数用尽的逻辑
+        {
+            // 图标设置为默认图标
+            this.m_arrSkillBtn[realBtnID].SetSkillAvatar(this.m_mapSkillUrl[CoreConfig.SKILL_NULL]);
+            this.m_arrSkillID[realBtnID] = CoreConfig.SKILL_NULL;
+        }
     }
 
     /**
@@ -197,6 +216,7 @@ export class SkillMgr
                 console.log("你的", i + 1, "号位置获得了", skillID);
                 this.m_arrSkillID[i] = skillID;
                 this.m_arrSkillBtn[i].SetSkillAvatar(this.m_mapSkillUrl[skillID]);
+                this.m_arrSkillBtn[i].SetUseCnt(this.m_mapSkillUseCnt[skillID], this.m_mapSkillCDLength[skillID]);
                 break;
             }
         }
@@ -210,9 +230,12 @@ export class SkillMgr
         this.m_mapSkillClickInfo[CoreConfig.SKILL_SPEED_UP] = 0;
         this.m_mapSkillClickInfo[CoreConfig.SKILL_FIRE_AROUND] = 0;
         this.m_mapSkillClickInfo[CoreConfig.SKILL_ICE_DART_SCATTER] = 1;
+        this.m_mapSkillClickInfo[CoreConfig.SKILL_ICE_WIND] = 0;
+        this.m_mapSkillClickInfo[CoreConfig.SKILL_FLASH_AWAY] = 1;
+        this.m_mapSkillClickInfo[CoreConfig.SKILL_THUNDER_STRIKE] = 1;
     }
 
-    /**初始化各技能id的技能“要求的单位的状态掩码” */
+    /**初始化各技能id的技能“要求的单位的状态掩码”---指向型技能专用 */
     private InitSkillStateMask(): void 
     {
         // TODO ... 重构，从外部读表
@@ -220,6 +243,9 @@ export class SkillMgr
         this.m_mapSkillStateMask[CoreConfig.SKILL_SPEED_UP] = -1;
         this.m_mapSkillStateMask[CoreConfig.SKILL_FIRE_AROUND] = -1;
         this.m_mapSkillStateMask[CoreConfig.SKILL_ICE_DART_SCATTER] = -1;
+        this.m_mapSkillStateMask[CoreConfig.SKILL_ICE_WIND] = -1;
+        this.m_mapSkillStateMask[CoreConfig.SKILL_FLASH_AWAY] = -1;
+        this.m_mapSkillStateMask[CoreConfig.SKILL_THUNDER_STRIKE] = -1;
     }
 
     /**初始化技能的url集合 */
@@ -231,6 +257,37 @@ export class SkillMgr
         this.m_mapSkillUrl[CoreConfig.SKILL_SPEED_UP] = "skill_speedUp";
         this.m_mapSkillUrl[CoreConfig.SKILL_FIRE_AROUND] = "skill_fireAround";
         this.m_mapSkillUrl[CoreConfig.SKILL_ICE_DART_SCATTER] = "skill_iceDartScatter";
+        this.m_mapSkillUrl[CoreConfig.SKILL_ICE_WIND] = "skill_iceWind";
+        this.m_mapSkillUrl[CoreConfig.SKILL_FLASH_AWAY] = "skill_flashAway";
+        this.m_mapSkillUrl[CoreConfig.SKILL_THUNDER_STRIKE] = "skill_thunderStrike";
+    }
+
+    /**初始化技能的使用次数集合 */
+    private InitSkillUseCntMap(): void 
+    {
+        // TODO ... 重构，从外部读表
+        this.m_mapSkillUseCnt[CoreConfig.SKILL_NULL] = -1;
+        this.m_mapSkillUseCnt[CoreConfig.SKILL_HOOK] = -1;
+        this.m_mapSkillUseCnt[CoreConfig.SKILL_SPEED_UP] = 1;
+        this.m_mapSkillUseCnt[CoreConfig.SKILL_FIRE_AROUND] = 1;
+        this.m_mapSkillUseCnt[CoreConfig.SKILL_ICE_DART_SCATTER] = 2;
+        this.m_mapSkillUseCnt[CoreConfig.SKILL_ICE_WIND] = 2;
+        this.m_mapSkillUseCnt[CoreConfig.SKILL_FLASH_AWAY] = 1;
+        this.m_mapSkillUseCnt[CoreConfig.SKILL_THUNDER_STRIKE] = 2;
+    }
+
+    /**初始化技能的cd集合 */
+    private InitSkillCDLengthMap(): void 
+    {
+        // TODO ... 重构，从外部读表
+        this.m_mapSkillCDLength[CoreConfig.SKILL_NULL] = 0;
+        this.m_mapSkillCDLength[CoreConfig.SKILL_HOOK] = 3;
+        this.m_mapSkillCDLength[CoreConfig.SKILL_SPEED_UP] = 0;
+        this.m_mapSkillCDLength[CoreConfig.SKILL_FIRE_AROUND] = 0;
+        this.m_mapSkillCDLength[CoreConfig.SKILL_ICE_DART_SCATTER] = 12;
+        this.m_mapSkillCDLength[CoreConfig.SKILL_ICE_WIND] = 20;
+        this.m_mapSkillCDLength[CoreConfig.SKILL_FLASH_AWAY] = 0;
+        this.m_mapSkillCDLength[CoreConfig.SKILL_THUNDER_STRIKE] = 10;
     }
 
     /**

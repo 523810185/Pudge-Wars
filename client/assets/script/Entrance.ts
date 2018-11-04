@@ -25,6 +25,7 @@ export default class Entrance extends cc.Component
     {
         Core.Init();
         this.GetCanvasNode();
+        this.UIAdapter();
         this.BindEvent();
     }
 
@@ -37,6 +38,16 @@ export default class Entrance extends cc.Component
         this.m_stLogo = this.canvas.getChildByName('logo');
         this.m_stBackground = this.canvas.getChildByName('background');
         this.m_stDefaultBackground = this.canvas.getChildByName('default_background');
+    }
+
+    /**
+     * 适配
+     */
+    private UIAdapter(): void 
+    {
+        console.log("当前屏幕的宽度和高度为，", this.canvas.width, this.canvas.height);
+        CoreConfig.CANVAS_WIDTH = this.canvas.width;
+        CoreConfig.CANVAS_HEIGHT = this.canvas.height;
     }
 
     /**

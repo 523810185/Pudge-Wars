@@ -42,9 +42,11 @@ export class BallisticSkill implements BaseTicker
      * @param ballisticRidius 弹道的影响半径
      * @param ballisticDmg 造成的伤害
      * @param isSlowDown 是否减速碰到的单位，默认否，默认的减速减少50%移速4s
+     * @param dmgMap 如果传参，意味着可能多个弹道类技能共用着一个记录的map
      */
     constructor(prefabUrl: string, unit: Unit, initPos: cc.Vec2, flyVec: cc.Vec2, flySpeed: number,
-        ballisticRidius: number, ballisticDmg: number, isSlowDown: boolean = false) 
+        ballisticRidius: number, ballisticDmg: number, isSlowDown: boolean = false,
+        dmgMap: Map<Unit, boolean> = new Map<Unit, boolean>()) 
     {
         // 先把参数保留一下三位小数
         initPos.x = FloatNumHandler.PreservedTo(initPos.x);
@@ -62,6 +64,7 @@ export class BallisticSkill implements BaseTicker
         this.m_stRotNormalVec.x = FloatNumHandler.PreservedTo(this.m_stRotNormalVec.x);
         this.m_stRotNormalVec.y = FloatNumHandler.PreservedTo(this.m_stRotNormalVec.y);
         this.m_iTickSpeed = FloatNumHandler.PreservedTo(flySpeed / 60);
+        this.m_mapIsGoDmg = dmgMap;
         this.Init();
         Core.ResourceMgr.LoadRes(prefabUrl, this.OnLoad.bind(this));
     }
@@ -70,13 +73,13 @@ export class BallisticSkill implements BaseTicker
     {
         this.m_stBallisticNode = cc.instantiate(res);
         cc.find("Canvas").addChild(this.m_stBallisticNode);
+        this.m_stBallisticNode.position = this.m_stLogicPos; // initPos
         this.m_bIsLoaded = true;
     }
 
     private Init(): void 
     {
         this.m_bIsLoaded = false;
-        this.m_mapIsGoDmg = new Map<Unit, boolean>();
     }
 
     Update(): void

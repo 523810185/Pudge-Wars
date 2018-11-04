@@ -22,6 +22,7 @@ export class IceDartScatterSkill implements BaseNormalSkill
     {
         // 冰飞镖部分
         let deltaRad = 30 / 180 * Math.PI;
+        let dmgMap: Map<Unit, boolean> = new Map<Unit, boolean>(); // 保证每个单位最多只能被一个飞镖击中
         for(let i = 0; i < 3; i++) 
         {
             let nowRot = this.m_stRotVec;
@@ -34,7 +35,7 @@ export class IceDartScatterSkill implements BaseNormalSkill
                 nowRot = this.VecRotate(nowRot, -deltaRad);
             }
             let iceDart = new BallisticSkill("prefabs/ice_dart", this.m_stUnit, this.m_stUnit.GetNode().position,
-                nowRot.mul(300), 500, 30, 40, true);
+                nowRot.mul(300), 500, 30, 40, true, dmgMap);
             Core.TickMgr.AddTicker(iceDart);
         }
         // 自身击退部分

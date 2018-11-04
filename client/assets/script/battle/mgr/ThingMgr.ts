@@ -1,6 +1,7 @@
 import Core from "../../core/Core";
 import {SkillThing} from "../skill/SkillThing";
 import {CoreConfig} from "../../core/CoreConfig";
+import {eMessageHead} from "../../core/NetMgr";
 
 export class ThingMgr 
 {
@@ -53,6 +54,14 @@ export class ThingMgr
             if(unitID == CoreConfig.MY_HERO_ID) 
             {
                 Core.GameLogic.SkillMgr.GainNewSkill(skillThing.GetSkillID());
+                // 向服务器发送归还技能消息
+                // TODO ... 待封装
+                let content = {
+                    unitID: CoreConfig.MY_HERO_ID,
+                    thingID: thingID,
+                    skillID: skillThing.GetSkillID()
+                };
+                Core.NetMgr.EmitMsgToServer(eMessageHead.RETURN_SKILL_THING, JSON.stringify(content));
             }
         }
     }

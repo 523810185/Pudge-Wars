@@ -8,6 +8,8 @@ import {BaseTicker} from "../../common/BaseTicker";
 import {FloatNumHandler} from "../../common/FloatNumHandler";
 import {FireAroundSkill} from "../skill/tickSkill/FireAroundSkill";
 import {IceDartScatterSkill} from "../skill/commonSkill/IceDartScatterSkill";
+import {IceWind} from "../skill/commonSkill/IceWindSkill";
+import {FlashAwaySkill} from "../skill/tickSkill/FlashAwaySkill";
 
 /**准备被废弃的移动方案 */
 export enum eMoveType
@@ -101,6 +103,9 @@ export class ActionMgr
             Core.GameLogic.SkillMgr.GoNormalState(btnID);
         }
 
+        // 释放技能，停止之前的移动行为
+        this.m_stMoveMgr.UnitUnMove(heroID);
+
         // 各个技能逻辑处理 
         if(skillID == CoreConfig.SKILL_HOOK) 
         {
@@ -108,7 +113,7 @@ export class ActionMgr
         }
         else if(skillID == CoreConfig.SKILL_SPEED_UP) 
         {
-            this.SpeedUp(heroID);
+            this.SkillSpeedUp(heroID);
         }
         else if(skillID == CoreConfig.SKILL_FIRE_AROUND) 
         {
@@ -117,6 +122,14 @@ export class ActionMgr
         else if(skillID == CoreConfig.SKILL_ICE_DART_SCATTER) 
         {
             this.SkillIceDartScatter(heroID, pos);
+        }
+        else if(skillID == CoreConfig.SKILL_ICE_WIND) 
+        {
+            this.SkillIceWind(heroID);
+        }
+        else if(skillID == CoreConfig.SKILL_FLASH_AWAY) 
+        {
+            this.SkillFlashAway(heroID, pos);
         }
         else 
         {
@@ -170,12 +183,24 @@ export class ActionMgr
     }
 
     /**加速技能 */
-    private SpeedUp(heroID: number) 
+    private SkillSpeedUp(heroID: number): void 
     {
         let unit = this.GetUnitByID(heroID);
 
         let ticker = new SpeedUpSkill(unit);
         Core.TickMgr.AddTicker(ticker);
+    }
+
+    /**闪现技能 */
+    private SkillFlashAway(heroID: number, pos: cc.Vec2): void 
+    {
+        let ticker = new FlashAwaySkill(this.GetUnitByID(heroID), pos);
+        Core.TickMgr.AddTicker(ticker);
+    }
+
+    private SkillIceWind(heroID: number): void 
+    {
+        let iceWind = new IceWind(this.GetUnitByID(heroID));
     }
 
     private GetNodeByID(unitID: number): cc.Node
@@ -215,6 +240,18 @@ class MoveMgr implements BaseTicker
         this.m_mapMoveUnits.set(unitID, moveTo);
     }
 
+    /**
+     * 撤销某个单位的移动指令
+     * @param unitID 单位id
+     */
+    public UnitUnMove(unitID: number): void 
+    {
+        if(this.m_mapMoveUnits.has(unitID))
+        {
+            this.m_mapMoveUnits.delete(unitID);
+        }
+    }
+
     Update(): void 
     {
         let removeArray = new Array<number>();
@@ -248,7 +285,7 @@ class MoveMgr implements BaseTicker
 
         for(let unitID of removeArray) 
         {
-            this.m_mapMoveUnits.delete(unitID);
+            this.UnitUnMove(unitID);
         }
     }
 
