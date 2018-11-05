@@ -23,18 +23,18 @@ export class UnitMgr
 
     /**
      * 将一个单位插入
-     * @param unidID 单位的id
+     * @param unitID 单位的id
      * @param unit 单位本身
      */
-    public InsertUnit(unidID: number, unit: Unit): void 
+    public InsertUnit(unitID: number, unit: Unit): void 
     {
-        if(this.m_stUnitMap.get(unidID)) 
+        if(this.m_stUnitMap.get(unitID)) 
         {
-            cc.error("UnitMgr填入了一个已经存在的id，请检查逻辑。id为", unidID);
+            cc.error("UnitMgr填入了一个已经存在的id，请检查逻辑。id为", unitID);
         }
         else 
         {
-            this.m_stUnitMap.set(unidID, unit);
+            this.m_stUnitMap.set(unitID, unit);
         }
     }
 

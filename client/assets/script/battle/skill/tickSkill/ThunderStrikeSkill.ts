@@ -5,7 +5,7 @@ import Core from "../../../core/Core";
 export class ThunderStrikeSkill implements BaseTicker 
 {
     /**伤害延迟帧数 */
-    private readonly DAMAGE_DELAY: number = 60 * 0.5;
+    private readonly DAMAGE_DELAY: number = 60 * 1.0;
     /**结束时间 */
     private readonly END_DELAY: number = 60 * 2;
     /**伤害 */
@@ -40,6 +40,12 @@ export class ThunderStrikeSkill implements BaseTicker
         this.m_stAnimationNode = cc.instantiate(res);
         cc.find("Canvas").addChild(this.m_stAnimationNode);
         this.m_stAnimationNode.position = this.m_stPos;
+
+        // 为加载慢的机子的额外处理
+        if(this.IsFinished()) 
+        {
+            this.Clear();
+        }
     }
 
     Update(): void 

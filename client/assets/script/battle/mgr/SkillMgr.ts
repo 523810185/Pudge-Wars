@@ -61,7 +61,7 @@ export class SkillMgr
 
         this.m_arrSkillID[0] = CoreConfig.SKILL_HOOK;
         this.m_arrSkillID[1] = CoreConfig.SKILL_THUNDER_STRIKE;
-        this.m_arrSkillID[2] = CoreConfig.SKILL_NULL;
+        this.m_arrSkillID[2] = CoreConfig.SKILL_AVATAR;
 
         this.m_arrSkillBtn[0] = new SkillBtn(this.m_stCanvas.getChildByName('skill1'));
         this.m_arrSkillBtn[1] = new SkillBtn(this.m_stCanvas.getChildByName('skill2'));
@@ -233,6 +233,7 @@ export class SkillMgr
         this.m_mapSkillClickInfo[CoreConfig.SKILL_ICE_WIND] = 0;
         this.m_mapSkillClickInfo[CoreConfig.SKILL_FLASH_AWAY] = 1;
         this.m_mapSkillClickInfo[CoreConfig.SKILL_THUNDER_STRIKE] = 1;
+        this.m_mapSkillClickInfo[CoreConfig.SKILL_AVATAR] = 0;
     }
 
     /**初始化各技能id的技能“要求的单位的状态掩码”---指向型技能专用 */
@@ -246,6 +247,7 @@ export class SkillMgr
         this.m_mapSkillStateMask[CoreConfig.SKILL_ICE_WIND] = -1;
         this.m_mapSkillStateMask[CoreConfig.SKILL_FLASH_AWAY] = -1;
         this.m_mapSkillStateMask[CoreConfig.SKILL_THUNDER_STRIKE] = -1;
+        this.m_mapSkillStateMask[CoreConfig.SKILL_AVATAR] = -1;
     }
 
     /**初始化技能的url集合 */
@@ -260,6 +262,7 @@ export class SkillMgr
         this.m_mapSkillUrl[CoreConfig.SKILL_ICE_WIND] = "skill_iceWind";
         this.m_mapSkillUrl[CoreConfig.SKILL_FLASH_AWAY] = "skill_flashAway";
         this.m_mapSkillUrl[CoreConfig.SKILL_THUNDER_STRIKE] = "skill_thunderStrike";
+        this.m_mapSkillUrl[CoreConfig.SKILL_AVATAR] = "skill_avatar";
     }
 
     /**初始化技能的使用次数集合 */
@@ -274,6 +277,7 @@ export class SkillMgr
         this.m_mapSkillUseCnt[CoreConfig.SKILL_ICE_WIND] = 2;
         this.m_mapSkillUseCnt[CoreConfig.SKILL_FLASH_AWAY] = 1;
         this.m_mapSkillUseCnt[CoreConfig.SKILL_THUNDER_STRIKE] = 2;
+        this.m_mapSkillUseCnt[CoreConfig.SKILL_AVATAR] = 1;
     }
 
     /**初始化技能的cd集合 */
@@ -288,6 +292,7 @@ export class SkillMgr
         this.m_mapSkillCDLength[CoreConfig.SKILL_ICE_WIND] = 20;
         this.m_mapSkillCDLength[CoreConfig.SKILL_FLASH_AWAY] = 0;
         this.m_mapSkillCDLength[CoreConfig.SKILL_THUNDER_STRIKE] = 10;
+        this.m_mapSkillCDLength[CoreConfig.SKILL_AVATAR] = 0;
     }
 
     /**

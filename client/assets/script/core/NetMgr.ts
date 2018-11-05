@@ -16,7 +16,8 @@ export enum eMessageHead
 {
     TICK_MESSAGE = "tick",
     LOGIN_MESSAGE = "login",
-    RETURN_SKILL_THING = "return_skill_thing"
+    RETURN_SKILL_THING = "return_skill_thing",
+    GAME_END = "game_end"
 }
 
 /**帧消息的结构体 */

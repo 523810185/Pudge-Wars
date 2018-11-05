@@ -11,6 +11,7 @@ import {IceDartScatterSkill} from "../skill/commonSkill/IceDartScatterSkill";
 import {IceWind} from "../skill/commonSkill/IceWindSkill";
 import {FlashAwaySkill} from "../skill/tickSkill/FlashAwaySkill";
 import {ThunderStrikeSkill} from "../skill/tickSkill/ThunderStrikeSkill";
+import {AvatarSkill} from "../skill/tickSkill/AvatarSkill";
 
 /**准备被废弃的移动方案 */
 export enum eMoveType
@@ -136,6 +137,10 @@ export class ActionMgr
         {
             this.SkillThunderStrike(heroID, pos);
         }
+        else if(skillID == CoreConfig.SKILL_AVATAR) 
+        {
+            this.SkillAvatar(heroID);
+        }
         else 
         {
             console.log(heroID, "释放的技能为", skillID);
@@ -210,9 +215,17 @@ export class ActionMgr
         Core.TickMgr.AddTicker(ticker);
     }
 
+    /**罡风护体技能 */
     private SkillIceWind(heroID: number): void 
     {
         let iceWind = new IceWind(this.GetUnitByID(heroID));
+    }
+
+    /**天神下凡技能 */
+    private SkillAvatar(heroID: number): void 
+    {
+        let ticker = new AvatarSkill(this.GetUnitByID(heroID));
+        Core.TickMgr.AddTicker(ticker);
     }
 
     private GetNodeByID(unitID: number): cc.Node

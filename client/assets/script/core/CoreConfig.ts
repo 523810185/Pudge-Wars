@@ -19,6 +19,7 @@ export class CoreConfig
     public static SKILL_ICE_WIND: number = 5;         // 罡风护体
     public static SKILL_FLASH_AWAY: number = 6;     // 闪现
     public static SKILL_THUNDER_STRIKE: number = 7;  // 雷霆一击
+    public static SKILL_AVATAR: number = 8;         // 天神下凡
 
     // UI层级
     public static Z_INDEX_UI: number = 100;

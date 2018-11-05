@@ -75,6 +75,12 @@ export class BallisticSkill implements BaseTicker
         cc.find("Canvas").addChild(this.m_stBallisticNode);
         this.m_stBallisticNode.position = this.m_stLogicPos; // initPos
         this.m_bIsLoaded = true;
+
+        // 为加载慢的机子的额外处理
+        if(this.IsFinished()) 
+        {
+            this.Clear();
+        }
     }
 
     private Init(): void 
@@ -139,6 +145,9 @@ export class BallisticSkill implements BaseTicker
 
     Clear(): void
     {
-        this.m_stBallisticNode.destroy();
+        if(this.m_stBallisticNode != null) 
+        {
+            this.m_stBallisticNode.destroy();
+        }
     }
 }
