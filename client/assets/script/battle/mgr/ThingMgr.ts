@@ -65,4 +65,14 @@ export class ThingMgr
             }
         }
     }
+
+    /**游戏结束后的清空 */
+    public ClearGame(): void 
+    {
+        this.m_mapThingMgr.forEach((skillThing: SkillThing, thingID: number) =>
+        {
+            this.DestroyThingByID(thingID);
+        });
+        this.m_mapThingMgr.clear();
+    }
 }

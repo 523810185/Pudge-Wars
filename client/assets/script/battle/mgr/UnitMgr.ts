@@ -40,17 +40,39 @@ export class UnitMgr
 
     /**
      * 删除一个单位
-     * @param unitID 单位的id 
+     * @param unitID 单位的id 或者 一个单位本身
      */
-    public RemoveUnit(unitID: number): void 
+    public RemoveUnit(unitID: number | Unit): void 
     {
-        if(!this.m_stUnitMap.get(unitID)) 
+        if(unitID instanceof Unit)
         {
-            cc.error("UnitMgr试图删除一个不存在的id，请检查逻辑。id为", unitID);
+            let removeID: number = -1;
+            this.m_stUnitMap.forEach((unit: Unit, id: number) =>
+            {
+                if(unit == unitID) 
+                {
+                    removeID = id;
+                }
+            });
+            if(removeID == -1) 
+            {
+                cc.error("UnitMgr试图删除一个不存在的单位，请检查逻辑。unit:", unitID);
+            }
+            else 
+            {
+                this.m_stUnitMap.delete(removeID);
+            }
         }
         else 
         {
-            this.m_stUnitMap.delete(unitID);
+            if(!this.m_stUnitMap.get(unitID)) 
+            {
+                cc.error("UnitMgr试图删除一个不存在的id，请检查逻辑。id为", unitID);
+            }
+            else 
+            {
+                this.m_stUnitMap.delete(unitID);
+            }
         }
     }
 
@@ -69,5 +91,15 @@ export class UnitMgr
         {
             return node;
         }
+    }
+
+    /**游戏结束后的清空 */
+    public ClearGame(): void 
+    {
+        this.m_stUnitMap.forEach((unit: Unit, unitID: number) =>
+        {
+            unit.Clear();
+        });
+        this.m_stUnitMap.clear();
     }
 }

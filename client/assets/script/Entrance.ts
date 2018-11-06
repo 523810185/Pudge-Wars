@@ -12,6 +12,12 @@ export default class Entrance extends cc.Component
 
     /**开始按钮 */
     private m_stBtnStartGame: cc.Node;
+    /**返回主界面的按钮 */
+    private m_stBtnReturnToMain: cc.Node;
+    /**再来一局 */
+    private m_stBtnReStart: cc.Node;
+    /**结算文字 */
+    private m_stEndGameLabel: cc.Label;
     /**logo */
     private m_stLogo: cc.Node;
     /**背景 */
@@ -38,6 +44,9 @@ export default class Entrance extends cc.Component
         this.m_stLogo = this.canvas.getChildByName('logo');
         this.m_stBackground = this.canvas.getChildByName('background');
         this.m_stDefaultBackground = this.canvas.getChildByName('default_background');
+        this.m_stBtnReStart = this.canvas.getChildByName('btn_reStart');
+        this.m_stBtnReturnToMain = this.canvas.getChildByName('btn_returnToMain');
+        this.m_stEndGameLabel = this.canvas.getChildByName('endGameLabel').getComponent(cc.Label);
     }
 
     /**
@@ -55,7 +64,9 @@ export default class Entrance extends cc.Component
      */
     private BindEvent(): void 
     {
-        this.m_stBtnStartGame.on(cc.Node.EventType.TOUCH_END, this.OnClickStartGameHandler.bind(this));
+        this.m_stBtnStartGame.on(cc.Node.EventType.TOUCH_END, this.OnClickStartGameHandler, this);
+        this.m_stBtnReStart.on(cc.Node.EventType.TOUCH_END, this.OnClickReStartBtnHandler, this);
+        this.m_stBtnReturnToMain.on(cc.Node.EventType.TOUCH_END, this.OnClickReturnToMainBtnHandler, this);
     }
 
     /**
@@ -74,6 +85,22 @@ export default class Entrance extends cc.Component
         // this.canvas.active = false;
         // this.HideMainUI();
         // this.StartGame();
+    }
+
+    /**
+     * 点击重新开始按钮
+     */
+    private OnClickReStartBtnHandler(): void 
+    {
+
+    }
+
+    /**
+     * 点击回到主界面按钮
+     */
+    private OnClickReturnToMainBtnHandler(): void 
+    {
+
     }
 
     /**
@@ -104,6 +131,42 @@ export default class Entrance extends cc.Component
         this.ShowBattleBackground();
         Core.GameLogic.StartGame(args);
         this.m_bIsStart = true;
+    }
+
+    /**
+     * 结束游戏
+     */
+    public EndGame(args?: any): void 
+    {
+        this.m_bIsStart = false;
+        this.m_stBtnReStart.active = true;
+        this.m_stBtnReturnToMain.active = true;
+        this.m_stEndGameLabel.node.active = true;
+        // 根据结果改变结算文字
+        if(args) 
+        {
+            let result: string = args.result;
+            if(result == "win") 
+            {
+                this.m_stEndGameLabel.string = "You Win!";
+            }
+            else if(result == "lose") 
+            {
+                this.m_stEndGameLabel.string = "You Lose!";
+            }
+        }
+        // 清空各个Mgr的缓存
+        this.ClearGame();
+    }
+
+    /**
+     * 游戏结束后的清空
+     */
+    private ClearGame(): void 
+    {
+        Core.GameLogic.SkillMgr.ClearGame();
+        Core.GameLogic.ThingMgr.ClearGame();
+        Core.GameLogic.UnitMgr.ClearGame();
     }
 
     update(dt: number): void 

@@ -1,4 +1,7 @@
 import {HPBar} from "./HPBar";
+import Core from "../../core/Core";
+import {CoreConfig} from "../../core/CoreConfig";
+import {eMessageHead} from "../../core/NetMgr";
 
 /**单位类型 */
 export enum eUnitType 
@@ -194,12 +197,55 @@ export class Unit
         return this;
     }
 
-    /**单位死亡 */
-    public Die(): void 
+    /**
+     * 清空改单位下的资源
+     */
+    public Clear(): void 
     {
-        // TODO: 单位死亡单位如何处理的逻辑以后要修改
         this.m_stNode.destroy();
         // 销毁hpBar
         this.m_stHPBar.Destroy();
+        // 从UnitMgr中删除
+        Core.GameLogic.UnitMgr.RemoveUnit(this);
+    }
+
+    /**单位死亡 */
+    private Die(): void 
+    {
+        // TODO: 单位死亡单位如何处理的逻辑以后要修改
+
+        // 只有当死亡单位就是本机控制的英雄时才检查阵营信息：这样可以确保只有一个人向服务器发送了结算消息
+        if(Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID) != this)
+        {
+            this.Clear();
+            return;
+        }
+        else 
+        {
+            this.Clear();
+        }
+
+        // 先清空在检查阵营信息
+        let teamMask = 0;
+        Core.GameLogic.UnitMgr.VisitUnit((unit: Unit, unitID: number) =>
+        {
+            if(unit.Team == eUnitTeam.Red) 
+            {
+                teamMask |= 1;
+            }
+            else if(unit.Team == eUnitTeam.Blue) 
+            {
+                teamMask |= 2;
+            }
+        });
+        console.warn("---", teamMask);
+        if(teamMask != 3) // 即只有一方阵营存活
+        {
+            let content = {
+                result: "win",
+                teamMask: teamMask
+            };
+            Core.NetMgr.EmitMsgToServer(eMessageHead.GAME_END, JSON.stringify(content));
+        }
     }
 }

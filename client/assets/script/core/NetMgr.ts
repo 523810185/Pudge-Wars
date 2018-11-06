@@ -80,6 +80,14 @@ export class NetMgr
 
             cc.find('Canvas').getComponent(Entrance).StartGame(loginContent.idArr);
         });
+
+        this.m_pSocket.on(eMessageHead.GAME_END, (data) =>
+        {
+            console.log("接到游戏结束消息：", data);
+
+            // 游戏结束处理
+            cc.find('Canvas').getComponent(Entrance).EndGame(JSON.parse(data));
+        });
     }
 
     /**

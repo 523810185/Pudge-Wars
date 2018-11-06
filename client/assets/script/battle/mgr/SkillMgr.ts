@@ -59,10 +59,6 @@ export class SkillMgr
         this.InitSkillUseCntMap();
         this.InitSkillCDLengthMap();
 
-        this.m_arrSkillID[0] = CoreConfig.SKILL_HOOK;
-        this.m_arrSkillID[1] = CoreConfig.SKILL_THUNDER_STRIKE;
-        this.m_arrSkillID[2] = CoreConfig.SKILL_AVATAR;
-
         this.m_arrSkillBtn[0] = new SkillBtn(this.m_stCanvas.getChildByName('skill1'));
         this.m_arrSkillBtn[1] = new SkillBtn(this.m_stCanvas.getChildByName('skill2'));
         this.m_arrSkillBtn[2] = new SkillBtn(this.m_stCanvas.getChildByName('skill3'));
@@ -71,6 +67,12 @@ export class SkillMgr
     /**将技能的按钮显示出来 */
     public Awake(): void 
     {
+        // 初始化技能
+        this.m_arrSkillID[0] = CoreConfig.SKILL_HOOK;
+        this.m_arrSkillID[1] = CoreConfig.SKILL_NULL;
+        this.m_arrSkillID[2] = CoreConfig.SKILL_NULL;
+
+        // 技能的显示
         for(let i = 0; i < this.MAX_SKILL_CNT; i++) 
         {
             let item = this.m_arrSkillBtn[i];
@@ -84,6 +86,15 @@ export class SkillMgr
         for(let item of this.m_arrSkillBtn) 
         {
             Core.TickMgr.AddTicker(item);
+        }
+    }
+
+    /**游戏结束后的清空 */
+    public ClearGame(): void 
+    {
+        for(let i = 0; i < this.MAX_SKILL_CNT; i++) 
+        {
+            this.m_arrSkillBtn[i].Hide();
         }
     }
 

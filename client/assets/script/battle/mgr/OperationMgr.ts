@@ -143,6 +143,12 @@ export class OperationMgr
     private OnClickSkillBtn(btnID: eClickState): void 
     {
         let nextState = Core.GameLogic.SkillMgr.GetSkillStateNext(btnID);
+        // 先清空所有技能的点击状态
+        for(let i = 1; i <= 3; i++) 
+        {
+            Core.GameLogic.SkillMgr.GoNormalState(i);
+        }
+
         if(nextState == eSkillStateNext.NULL) 
         {
             ShowToast("你尚未拥有该技能！");
