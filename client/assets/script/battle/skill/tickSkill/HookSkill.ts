@@ -167,8 +167,8 @@ export class HookSkill implements BaseTicker
         let minDis: number = -1;
         Core.GameLogic.UnitMgr.VisitUnit((item: Unit, unitID: number) =>
         {
-            // 钩的条件：不是自己，并且单位的类型是英雄
-            if(hero == item.GetNode() || item.Type != eUnitType.Hero)
+            // 钩的条件：不是自己，并且单位的类型是英雄，非魔免
+            if(hero == item.GetNode() || item.Type != eUnitType.Hero || item.IsMagicImmunity)
             {
                 return;
             }

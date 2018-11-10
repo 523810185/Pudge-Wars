@@ -20,9 +20,6 @@ export class AvatarSkill implements BaseTicker
     /**魔免需要变化 */
     private m_bNeedChangeMI: boolean;
 
-    private m_A = 0;
-    private m_B = 0;
-
     constructor(unit: Unit) 
     {
         this.m_stUnit = unit;
@@ -57,12 +54,10 @@ export class AvatarSkill implements BaseTicker
         if(this.m_iTickCnt <= this.GROW_TIME) 
         {
             this.m_stUnit.GetNode().scale += this.m_iGrowSpeed;
-            this.m_A++;
         }
         else if(this.m_iTickCnt > this.DURATION_TIME - this.GROW_TIME) 
         {
             this.m_stUnit.GetNode().scale -= this.m_iGrowSpeed;
-            this.m_B++;
         }
     }
 
@@ -73,7 +68,6 @@ export class AvatarSkill implements BaseTicker
 
     Clear(): void
     {
-        console.log("???,,", this.m_A, this.m_B);
         // 魔免
         if(this.m_bNeedChangeMI) 
         {

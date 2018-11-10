@@ -12,6 +12,7 @@ import {IceWind} from "../skill/commonSkill/IceWindSkill";
 import {FlashAwaySkill} from "../skill/tickSkill/FlashAwaySkill";
 import {ThunderStrikeSkill} from "../skill/tickSkill/ThunderStrikeSkill";
 import {AvatarSkill} from "../skill/tickSkill/AvatarSkill";
+import {GalaxyVortexSkill} from "../skill/tickSkill/GalaxyVortexSkill";
 
 /**准备被废弃的移动方案 */
 export enum eMoveType
@@ -95,7 +96,7 @@ export class ActionMgr
      * @param skillID 技能的id
      * @param pos 技能释放的坐标点
      */
-    public HeroSkill(btnID: number, heroID: number, skillID: number, pos?: cc.Vec2): void 
+    public HeroSkill(btnID: number, heroID: number, skillID: number, pos?: cc.Vec2, clickUnitID?: number): void 
     {
         if(heroID == CoreConfig.MY_HERO_ID) 
         {
@@ -140,6 +141,10 @@ export class ActionMgr
         else if(skillID == CoreConfig.SKILL_AVATAR) 
         {
             this.SkillAvatar(heroID);
+        }
+        else if(skillID == CoreConfig.SKILL_GALAXY_VORTEX) 
+        {
+            this.SkillGalaxyVortex(heroID, clickUnitID);
         }
         else 
         {
@@ -225,6 +230,13 @@ export class ActionMgr
     private SkillAvatar(heroID: number): void 
     {
         let ticker = new AvatarSkill(this.GetUnitByID(heroID));
+        Core.TickMgr.AddTicker(ticker);
+    }
+
+    /**星河涡流技能 */
+    private SkillGalaxyVortex(heroID: number, clickUnitID: number): void 
+    {
+        let ticker = new GalaxyVortexSkill(this.GetUnitByID(heroID), this.GetUnitByID(clickUnitID));
         Core.TickMgr.AddTicker(ticker);
     }
 

@@ -103,7 +103,7 @@ export class BallisticSkill implements BaseTicker
         }
         Core.GameLogic.UnitMgr.VisitUnit((unit: Unit, unitID: number) =>
         {
-            if(unit.Team == this.m_stUnit.Team || this.m_mapIsGoDmg.has(unit))
+            if(unit.Team == this.m_stUnit.Team || this.m_mapIsGoDmg.has(unit) || unit.IsMagicImmunity)
             {
                 return;
             }

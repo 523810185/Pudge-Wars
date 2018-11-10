@@ -139,7 +139,11 @@ export class NetMgr
             let btnID = content.btnID;
             let unitID = content.unitID;
             let skillID: number = content.skillID;
-            if(content.pos != undefined) 
+            if(content.clickUnitID != undefined) 
+            {
+                Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, null, content.clickUnitID)
+            }
+            else if(content.pos != undefined) 
             {
                 let pos: cc.Vec2 = new cc.Vec2(content.pos.x, content.pos.y);
                 Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, pos);

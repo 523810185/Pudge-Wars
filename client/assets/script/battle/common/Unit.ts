@@ -238,7 +238,7 @@ export class Unit
                 teamMask |= 2;
             }
         });
-        console.warn("---", teamMask);
+
         if(teamMask != 3) // 即只有一方阵营存活
         {
             let content = {

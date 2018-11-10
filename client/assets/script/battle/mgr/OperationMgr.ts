@@ -59,10 +59,10 @@ export class OperationMgr
         clickPos.x = FloatNumHandler.PreservedTo(clickPos.x);
         clickPos.y = FloatNumHandler.PreservedTo(clickPos.y);
         console.log("鼠标点击的位置是", clickPos, event.getLocation());
+        let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
 
         if(event.getButton() == cc.Event.EventMouse.BUTTON_RIGHT)
         {
-            let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
             let content = {
                 unitID: CoreConfig.MY_HERO_ID,
                 endPos: realPos
@@ -71,7 +71,7 @@ export class OperationMgr
         }
         else  // 左键点击的处理
         {
-            this.OnMouseLeftClickHandler(clickPos);
+            this.OnMouseLeftClickHandler(realPos);
         }
     }
 
@@ -191,12 +191,11 @@ export class OperationMgr
                 // 如果是非指向型技能，则直接发送位置消息给服务器
                 if(clickResult.m_stClickUnitID == -1) 
                 {
-                    let realPos: cc.Vec2 = new cc.Vec2(clickPos.x - CoreConfig.CANVAS_WIDTH / 2, clickPos.y - CoreConfig.CANVAS_HEIGHT / 2);
                     let content = {
                         btnID: this.m_iClickState,
                         unitID: CoreConfig.MY_HERO_ID,
                         skillID: Core.GameLogic.SkillMgr.GetSkillIDByBtnID(this.m_iClickState),
-                        pos: realPos
+                        pos: clickPos
                     };
                     Core.NetMgr.SendTickMessage(eTickMessageType.SKILL, content);
                 }

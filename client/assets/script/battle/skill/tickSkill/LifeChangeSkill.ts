@@ -40,7 +40,7 @@ export class LifeChangeSkill implements BaseTicker
 
     Update(): void 
     {
-        if(this.m_iHPChangeRest < this.m_iHPChangeInOneTick) 
+        if(Math.abs(this.m_iHPChangeRest) < Math.abs(this.m_iHPChangeInOneTick)) 
         {
             if(this.m_stUnit.IsAlive)
             {
@@ -60,7 +60,7 @@ export class LifeChangeSkill implements BaseTicker
 
     IsFinished(): boolean 
     {
-        return this.m_iHPChangeRest < 1e-3;
+        return Math.abs(this.m_iHPChangeRest) < 1e-3;
     }
 
     Clear(): void 
