@@ -13,6 +13,8 @@ import {FlashAwaySkill} from "../skill/tickSkill/FlashAwaySkill";
 import {ThunderStrikeSkill} from "../skill/tickSkill/ThunderStrikeSkill";
 import {AvatarSkill} from "../skill/tickSkill/AvatarSkill";
 import {GalaxyVortexSkill} from "../skill/tickSkill/GalaxyVortexSkill";
+import {UnitSkillMsg, UnitMoveMsg, UnitHPChangeMsg} from "../../common/message/EventMsg";
+import {EventID} from "../../core/EventID";
 
 /**准备被废弃的移动方案 */
 export enum eMoveType
@@ -42,17 +44,27 @@ export class ActionMgr
 
         this.m_stMoveMgr = new MoveMgr();
         Core.TickMgr.AddTicker(this.m_stMoveMgr);
+
+        // 注册事件
+        this.BindEvent();
     }
 
-    /**
-     * 英雄移动
-     * @param heroID 英雄id
-     * @param endPos 移动到的位置
-     */
-    public HeroMove(heroID: number, endPos: cc.Vec2) 
+    private BindEvent(): void 
     {
-        this.m_stMoveMgr.UnitMove(heroID, endPos);
+        Core.EventMgr.BindEvent(EventID.UNIT_SKILL, this.OnUnitSkillHandler, this);
+        Core.EventMgr.BindEvent(EventID.UNIT_MOVE, this.OnUnitMoveHandler, this);
+        Core.EventMgr.BindEvent(EventID.UNIT_HP_CHANGE, this.OnUnitHPChangeHandler, this);
     }
+
+    // /**
+    //  * 英雄移动
+    //  * @param heroID 英雄id
+    //  * @param endPos 移动到的位置
+    //  */
+    // public HeroMove(heroID: number, endPos: cc.Vec2) 
+    // {
+    //     this.m_stMoveMgr.UnitMove(heroID, endPos);
+    // }
 
     // /**
     //  * 英雄移动
@@ -89,16 +101,91 @@ export class ActionMgr
     //     }
     // }
 
+    // /**
+    //  * 英雄释放技能
+    //  * @param btnID 按钮的id
+    //  * @param heroID 释放技能的英雄的id
+    //  * @param skillID 技能的id
+    //  * @param pos 技能释放的坐标点
+    //  */
+    // public HeroSkill(btnID: number, heroID: number, skillID: number, pos?: cc.Vec2, clickUnitID?: number): void 
+    // {
+    //     if(heroID == CoreConfig.MY_HERO_ID) 
+    //     {
+    //         // 使播放cd动画
+    //         Core.GameLogic.SkillMgr.GoInCD(btnID);
+    //         // 使恢复正常状态
+    //         Core.GameLogic.SkillMgr.GoNormalState(btnID);
+    //     }
+
+    //     // 释放技能，停止之前的移动行为
+    //     this.m_stMoveMgr.UnitUnMove(heroID);
+
+    //     // 各个技能逻辑处理 
+    //     if(skillID == CoreConfig.SKILL_HOOK) 
+    //     {
+    //         this.SkillHook(heroID, pos);
+    //     }
+    //     else if(skillID == CoreConfig.SKILL_SPEED_UP) 
+    //     {
+    //         this.SkillSpeedUp(heroID);
+    //     }
+    //     else if(skillID == CoreConfig.SKILL_FIRE_AROUND) 
+    //     {
+    //         this.SkillFireAround(heroID);
+    //     }
+    //     else if(skillID == CoreConfig.SKILL_ICE_DART_SCATTER) 
+    //     {
+    //         this.SkillIceDartScatter(heroID, pos);
+    //     }
+    //     else if(skillID == CoreConfig.SKILL_ICE_WIND) 
+    //     {
+    //         this.SkillIceWind(heroID);
+    //     }
+    //     else if(skillID == CoreConfig.SKILL_FLASH_AWAY) 
+    //     {
+    //         this.SkillFlashAway(heroID, pos);
+    //     }
+    //     else if(skillID == CoreConfig.SKILL_THUNDER_STRIKE) 
+    //     {
+    //         this.SkillThunderStrike(heroID, pos);
+    //     }
+    //     else if(skillID == CoreConfig.SKILL_AVATAR) 
+    //     {
+    //         this.SkillAvatar(heroID);
+    //     }
+    //     else if(skillID == CoreConfig.SKILL_GALAXY_VORTEX) 
+    //     {
+    //         this.SkillGalaxyVortex(heroID, clickUnitID);
+    //     }
+    //     else 
+    //     {
+    //         console.log(heroID, "释放的技能为", skillID);
+    //     }
+    // }
+
+    // /**
+    //  * 让指定id的单位生命值发生变化
+    //  * @param unitID 单位id
+    //  * @param hpChange 生命值的变化，可正可负
+    //  */
+    // public UnitHPChange(unitID: number, hpChange: number): void 
+    // {
+    //     let unit = Core.GameLogic.UnitMgr.GetUnitByID(unitID);
+    //     unit.NowHP += hpChange;
+    // }
+
     /**
-     * 英雄释放技能
-     * @param btnID 按钮的id
-     * @param heroID 释放技能的英雄的id
-     * @param skillID 技能的id
-     * @param pos 技能释放的坐标点
-     */
-    public HeroSkill(btnID: number, heroID: number, skillID: number, pos?: cc.Vec2, clickUnitID?: number): void 
+    * 处理单位释放技能的回调函数
+    */
+    private OnUnitSkillHandler(data: UnitSkillMsg): void 
     {
-        if(heroID == CoreConfig.MY_HERO_ID) 
+        let unitID = data.UnitID;
+        let btnID = data.BtnID;
+        let skillID = data.SkillID;
+        let pos = data.Pos;
+        let clickUnitID = data.ClickUnitID;
+        if(unitID == CoreConfig.MY_HERO_ID) 
         {
             // 使播放cd动画
             Core.GameLogic.SkillMgr.GoInCD(btnID);
@@ -107,58 +194,68 @@ export class ActionMgr
         }
 
         // 释放技能，停止之前的移动行为
-        this.m_stMoveMgr.UnitUnMove(heroID);
+        this.m_stMoveMgr.UnitUnMove(unitID);
 
         // 各个技能逻辑处理 
         if(skillID == CoreConfig.SKILL_HOOK) 
         {
-            this.SkillHook(heroID, pos);
+            this.SkillHook(unitID, pos);
         }
         else if(skillID == CoreConfig.SKILL_SPEED_UP) 
         {
-            this.SkillSpeedUp(heroID);
+            this.SkillSpeedUp(unitID);
         }
         else if(skillID == CoreConfig.SKILL_FIRE_AROUND) 
         {
-            this.SkillFireAround(heroID);
+            this.SkillFireAround(unitID);
         }
         else if(skillID == CoreConfig.SKILL_ICE_DART_SCATTER) 
         {
-            this.SkillIceDartScatter(heroID, pos);
+            this.SkillIceDartScatter(unitID, pos);
         }
         else if(skillID == CoreConfig.SKILL_ICE_WIND) 
         {
-            this.SkillIceWind(heroID);
+            this.SkillIceWind(unitID);
         }
         else if(skillID == CoreConfig.SKILL_FLASH_AWAY) 
         {
-            this.SkillFlashAway(heroID, pos);
+            this.SkillFlashAway(unitID, pos);
         }
         else if(skillID == CoreConfig.SKILL_THUNDER_STRIKE) 
         {
-            this.SkillThunderStrike(heroID, pos);
+            this.SkillThunderStrike(unitID, pos);
         }
         else if(skillID == CoreConfig.SKILL_AVATAR) 
         {
-            this.SkillAvatar(heroID);
+            this.SkillAvatar(unitID);
         }
         else if(skillID == CoreConfig.SKILL_GALAXY_VORTEX) 
         {
-            this.SkillGalaxyVortex(heroID, clickUnitID);
+            this.SkillGalaxyVortex(unitID, clickUnitID);
         }
         else 
         {
-            console.log(heroID, "释放的技能为", skillID);
+            console.log(unitID, "释放的技能为", skillID);
         }
     }
 
     /**
-     * 让指定id的单位生命值发生变化
-     * @param unitID 单位id
-     * @param hpChange 生命值的变化，可正可负
+     * 处理单位移动的回调函数
      */
-    public UnitHPChange(unitID: number, hpChange: number): void 
+    private OnUnitMoveHandler(data: UnitMoveMsg): void
     {
+        let unitID = data.UnitID;
+        let pos = data.Pos;
+        this.m_stMoveMgr.UnitMove(unitID, pos);
+    }
+
+    /**
+     * 处理单位生命值变化的回调函数
+     */
+    private OnUnitHPChangeHandler(data: UnitHPChangeMsg): void
+    {
+        let unitID = data.UnitID;
+        let hpChange = data.HPChange;
         let unit = Core.GameLogic.UnitMgr.GetUnitByID(unitID);
         unit.NowHP += hpChange;
     }

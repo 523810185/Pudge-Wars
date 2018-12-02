@@ -19,7 +19,6 @@ export class IceWind implements BaseNormalSkill
     /**
      * 
      * @param unit 作用单位
-     * @param durationTime 持续时间（单位：秒）
      */
     constructor(unit: Unit) 
     {

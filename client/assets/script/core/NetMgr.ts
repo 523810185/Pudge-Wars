@@ -1,6 +1,8 @@
 import {CoreConfig} from "./CoreConfig";
 import Core from "./Core";
 import Entrance from "../Entrance";
+import {EventID} from "./EventID";
+import {UnitSkillMsg, UnitMoveMsg, UnitHPChangeMsg, SpawnThingsMsg, PickUpThingMsg} from "../common/message/EventMsg";
 
 export enum eTickMessageType 
 {
@@ -139,19 +141,26 @@ export class NetMgr
             let btnID = content.btnID;
             let unitID = content.unitID;
             let skillID: number = content.skillID;
-            if(content.clickUnitID != undefined) 
-            {
-                Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, null, content.clickUnitID)
-            }
-            else if(content.pos != undefined) 
-            {
-                let pos: cc.Vec2 = new cc.Vec2(content.pos.x, content.pos.y);
-                Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, pos);
-            }
-            else 
-            {
-                Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID);
-            }
+            let pos = content.pos == undefined ? null : new cc.Vec2(content.pos.x, content.pos.y);
+            let clickUnitID = content.clickUnitID == undefined ? null : content.clickUnitID;
+            Core.EventMgr.Emit(EventID.UNIT_SKILL, new UnitSkillMsg(btnID, unitID, skillID,
+                pos, clickUnitID));
+            // let btnID = content.btnID;
+            // let unitID = content.unitID;
+            // let skillID: number = content.skillID;
+            // if(content.clickUnitID != undefined) 
+            // {
+            //     Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, null, content.clickUnitID)
+            // }
+            // else if(content.pos != undefined) 
+            // {
+            //     let pos: cc.Vec2 = new cc.Vec2(content.pos.x, content.pos.y);
+            //     Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, pos);
+            // }
+            // else 
+            // {
+            //     Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID);
+            // }
         }
         else if(head == eTickMessageType.MOVE) 
         {
@@ -159,13 +168,15 @@ export class NetMgr
             // let moveType = content.moveType;
             // Core.GameLogic.ActionMgr.HeroMove(unitID, moveType);
             let endPos = new cc.Vec2(content.endPos.x, content.endPos.y);
-            Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
+            // Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
+            Core.EventMgr.Emit(EventID.UNIT_MOVE, new UnitMoveMsg(unitID, endPos));
         }
         else if(head == eTickMessageType.HP_CHANGE) 
         {
             let unitID = content.unitID;
             let hpChange = content.hpChange;
-            Core.GameLogic.ActionMgr.UnitHPChange(unitID, hpChange);
+            // Core.GameLogic.ActionMgr.UnitHPChange(unitID, hpChange);
+            Core.EventMgr.Emit(EventID.UNIT_HP_CHANGE, new UnitHPChangeMsg(unitID, hpChange));
         }
         else if(head == eTickMessageType.SPAWN_THING) 
         {
@@ -173,16 +184,18 @@ export class NetMgr
             for(let item of thingsArr) 
             {
                 let skillID = item.skillID;
-                let thingsID = item.thingID;
+                let thingID = item.thingID;
                 let pos = new cc.Vec2(item.pos.x, item.pos.y);
-                Core.GameLogic.ThingMgr.CreateSkillThing(thingsID, skillID, pos);
+                // Core.GameLogic.ThingMgr.CreateSkillThing(thingsID, skillID, pos);
+                Core.EventMgr.Emit(EventID.SPAWN_THINGS, new SpawnThingsMsg(thingID, skillID, pos));
             }
         }
         else if(head == eTickMessageType.PICK_UP) 
         {
             let unitID = content.unitID;
             let thingID = content.thingID;
-            Core.GameLogic.ThingMgr.DestroyThingByID(thingID, unitID);
+            // Core.GameLogic.ThingMgr.DestroyThingByID(thingID, unitID);
+            Core.EventMgr.Emit(EventID.PICK_UP_THING, new PickUpThingMsg(unitID, thingID));
         }
     }
 }

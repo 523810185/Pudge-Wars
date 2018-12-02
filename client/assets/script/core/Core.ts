@@ -3,6 +3,7 @@ import {ResourceMgr} from "./ResourceMgr";
 import {NetMgr} from "./NetMgr";
 import {TickMgr} from "./TickMgr";
 import {PoolMgr} from "./PoolMgr";
+import {EventMgr} from "./EventMgr";
 
 export default class Core
 {
@@ -16,11 +17,14 @@ export default class Core
     private static m_pTickMgr: TickMgr;
     /**管理一些常用物体的单位池 */
     private static m_pPoolMgr: PoolMgr;
+    /**事件管理器 */
+    private static m_pEventMgr: EventMgr;
 
     public static Init(): void 
     {
         // 根据各单例之间的引用关系来决定初始化顺序
         this.m_pResourceMgr = new ResourceMgr();
+        this.m_pEventMgr = new EventMgr();
         this.m_pTickMgr = new TickMgr();
         this.m_pNetMgr = new NetMgr();
         this.m_pPoolMgr = new PoolMgr();
@@ -62,5 +66,9 @@ export default class Core
     public static get PoolMgr(): PoolMgr 
     {
         return this.m_pPoolMgr;
+    }
+    public static get EventMgr(): EventMgr
+    {
+        return this.m_pEventMgr;
     }
 }

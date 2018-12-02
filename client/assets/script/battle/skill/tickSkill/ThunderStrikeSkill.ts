@@ -58,6 +58,8 @@ export class ThunderStrikeSkill implements BaseTicker
                 if(unit.Team != this.m_stUnit.Team && unit.Type != eUnitType.Building
                     && unit.GetNode().position.sub(this.m_stPos).mag() <= unit.CollisionSize + this.DAMAGE_RADIUS) 
                 {
+                    // TODO.. 不推荐这么写的原因在于，最好把hp变化的消息发送给服务器，这样服务器能够在关键时刻记录需要的数据，
+                    // 以及能够直接分发一些生命值变化的事件
                     unit.NowHP -= this.DAMAGE;
                 }
             });

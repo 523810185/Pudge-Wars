@@ -3,6 +3,8 @@ import Core from "./Core";
 import {BaseTicker} from "../common/BaseTicker";
 import {CoreConfig} from "./CoreConfig";
 import {eMoveType} from "../battle/mgr/ActionMgr";
+import {EventID} from "./EventID";
+import {UnitSkillMsg, UnitMoveMsg, UnitHPChangeMsg} from "../common/message/EventMsg";
 
 export class TickMgr 
 {
@@ -81,19 +83,23 @@ export class TickMgr
             let btnID = content.btnID;
             let unitID = content.unitID;
             let skillID: number = content.skillID;
-            if(content.clickUnitID != undefined) 
-            {
-                Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, null, content.clickUnitID)
-            }
-            else if(content.pos != undefined) 
-            {
-                let pos: cc.Vec2 = new cc.Vec2(content.pos.x, content.pos.y);
-                Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, pos);
-            }
-            else 
-            {
-                Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID);
-            }
+            let pos = content.pos == undefined ? null : content.pos;
+            let clickUnitID = content.clickUnitID == undefined ? null : content.clickUnitID;
+            Core.EventMgr.Emit(EventID.UNIT_SKILL, new UnitSkillMsg(btnID, unitID, skillID,
+                pos, clickUnitID));
+            // if(content.clickUnitID != undefined) 
+            // {
+            //     Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, null, content.clickUnitID)
+            // }
+            // else if(content.pos != undefined) 
+            // {
+            //     let pos: cc.Vec2 = new cc.Vec2(content.pos.x, content.pos.y);
+            //     Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID, pos);
+            // }
+            // else 
+            // {
+            //     Core.GameLogic.ActionMgr.HeroSkill(btnID, unitID, skillID);
+            // }
         }
         for(let content of this.m_stArrForMove) 
         {
@@ -101,7 +107,8 @@ export class TickMgr
             // let moveType = content.moveType;
             // Core.GameLogic.ActionMgr.HeroMove(unitID, moveType);
             let endPos = new cc.Vec2(content.endPos.x, content.endPos.y);
-            Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
+            // Core.GameLogic.ActionMgr.HeroMove(unitID, endPos);
+            Core.EventMgr.Emit(EventID.UNIT_MOVE, new UnitMoveMsg(unitID, endPos));
         }
 
         // 非帧更新（不论单机还是联机都要使用的部分）
@@ -148,6 +155,7 @@ export class TickMgr
      */
     public PushTickMessage(msgType: eTickMessageType, content: any): void 
     {
+        // TODO.. 感觉需要重构，因为可以被立即更新
         if(msgType == eTickMessageType.MOVE) 
         {
             this.m_stArrForMove.push(content);
@@ -160,7 +168,8 @@ export class TickMgr
         {
             let unitID = content.unitID;
             let hpChange = content.hpChange;
-            Core.GameLogic.ActionMgr.UnitHPChange(unitID, hpChange);
+            // Core.GameLogic.ActionMgr.UnitHPChange(unitID, hpChange);
+            Core.EventMgr.Emit(EventID.UNIT_HP_CHANGE, new UnitHPChangeMsg(unitID, hpChange));
         }
     }
 
