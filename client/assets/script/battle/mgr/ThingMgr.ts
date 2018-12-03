@@ -91,13 +91,8 @@ export class ThingMgr
             {
                 Core.GameLogic.SkillMgr.GainNewSkill(skillThing.GetSkillID());
                 // 向服务器发送归还技能消息
-                // TODO ... 待封装
-                let content = {
-                    unitID: CoreConfig.MY_HERO_ID,
-                    thingID: thingID,
-                    skillID: skillThing.GetSkillID()
-                };
-                Core.NetMgr.EmitMsgToServer(eMessageHead.RETURN_SKILL_THING, JSON.stringify(content));
+                Core.GameLogic.ServerRequestMgr.ReqReturnSkillThing(CoreConfig.MY_HERO_ID,
+                    thingID, skillThing.GetSkillID());
             }
         }
     }

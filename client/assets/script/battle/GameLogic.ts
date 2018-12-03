@@ -6,6 +6,9 @@ import {CoreConfig} from "../core/CoreConfig";
 import {SkillMgr} from "./mgr/SkillMgr";
 import {Unit, eUnitType, eUnitTeam} from "./common/Unit";
 import {ThingMgr} from "./mgr/ThingMgr";
+import {EventID} from "../core/EventID";
+import {GameOverMsg} from "../common/message/EventMsg";
+import {ServerRequestMgr} from "./mgr/ServerRequestMgr";
 
 export class GameLogic 
 {
@@ -21,6 +24,8 @@ export class GameLogic
     private m_pSkillMgr: SkillMgr;
     /**拾取物品管理器 */
     private m_pThingMgr: ThingMgr;
+    /**服务器请求管理器 */
+    private m_pServerRequestMgr: ServerRequestMgr;
 
     public constructor() 
     {
@@ -38,6 +43,10 @@ export class GameLogic
         this.m_pActionMgr = new ActionMgr();
         this.m_pSkillMgr = new SkillMgr();
         this.m_pThingMgr = new ThingMgr();
+        this.m_pServerRequestMgr = new ServerRequestMgr();
+
+        // TODO... 游戏结束后该内存的清除工作
+        new GameOverHandler();
     }
 
     /**初始化游戏逻辑 */
@@ -105,5 +114,34 @@ export class GameLogic
     public get ThingMgr(): ThingMgr
     {
         return this.m_pThingMgr;
+    }
+    public get ServerRequestMgr(): ServerRequestMgr 
+    {
+        return this.m_pServerRequestMgr;
+    }
+}
+
+class GameOverHandler
+{
+    constructor()
+    {
+        this.Init();
+    }
+
+    private Init(): void 
+    {
+        this.BindEvent();
+    }
+
+    private BindEvent(): void 
+    {
+        Core.EventMgr.BindEvent(EventID.GAME_OVER, this.OnGameOverHandler, this);
+    }
+
+    /**游戏结束的处理 */
+    private OnGameOverHandler(data: GameOverMsg): void 
+    {
+        let teamMask = data.WinnerTeamMask;
+        Core.GameLogic.ServerRequestMgr.ReqGameOver(teamMask);
     }
 }

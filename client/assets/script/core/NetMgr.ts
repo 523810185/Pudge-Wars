@@ -123,6 +123,11 @@ export class NetMgr
      */
     public EmitMsgToServer(msgHead: eMessageHead, content: string): void 
     {
+        if(!this.m_pSocket) 
+        {
+            return;
+        }
+
         this.m_pSocket.emit(msgHead, content);
     }
 

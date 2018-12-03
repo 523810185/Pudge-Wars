@@ -116,11 +116,7 @@ export class BallisticSkill implements BaseTicker
                 // 造成伤害
                 if(this.m_stUnit == Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID))
                 {
-                    let content = {
-                        unitID: unitID,
-                        hpChange: -this.m_iDmg
-                    };
-                    Core.NetMgr.SendTickMessage(eTickMessageType.HP_CHANGE, content);
+                    Core.GameLogic.ServerRequestMgr.ReqUnitHPChange(unitID, -this.m_iDmg);
                 }
                 // 减速
                 if(this.m_bIsGoSlow) 

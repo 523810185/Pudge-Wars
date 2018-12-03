@@ -1,4 +1,8 @@
-import {Unit} from "../common/Unit";
+import {Unit, eUnitTeam} from "../common/Unit";
+import Core from "../../core/Core";
+import {UnitDieMsg, GameOverMsg} from "../../common/message/EventMsg";
+import {EventID} from "../../core/EventID";
+import {CoreConfig} from "../../core/CoreConfig";
 
 export class UnitMgr 
 {
@@ -7,6 +11,13 @@ export class UnitMgr
     constructor() 
     {
         this.m_stUnitMap = new Map<number, Unit>();
+
+        this.BindEvent();
+    }
+
+    private BindEvent(): void 
+    {
+        Core.EventMgr.BindEvent(EventID.UNIT_DIE, this.OnUnitDieHandler, this);
     }
 
     /**
@@ -93,6 +104,31 @@ export class UnitMgr
         }
     }
 
+    /**
+     * 通过单位找到其id
+     * @param unit 单位
+     */
+    public GetIDByUnit(findUnit: Unit): number 
+    {
+        let ansUnitID = -1;
+        this.m_stUnitMap.forEach((unit: Unit, unitID: number) =>
+        {
+            if(unit == findUnit) 
+            {
+                ansUnitID = unitID;
+            }
+        });
+
+        if(ansUnitID == -1) 
+        {
+            cc.error("UnitMgr: 尝试通过一个不存在的unit来获取ID，unit为：", findUnit);
+        }
+        else 
+        {
+            return ansUnitID;
+        }
+    }
+
     /**游戏结束后的清空 */
     public ClearGame(): void 
     {
@@ -101,5 +137,42 @@ export class UnitMgr
             unit.Clear();
         });
         this.m_stUnitMap.clear();
+    }
+
+    /**
+     * 单位死亡处理
+     */
+    private OnUnitDieHandler(data: UnitDieMsg): void 
+    {
+        let dieUnitID = data.UnitID;
+
+        // 只有当死亡单位就是本机控制的英雄时才检查阵营信息：这样可以确保只有一个人向服务器发送了结算消息
+        if(CoreConfig.MY_HERO_ID != dieUnitID) 
+        {
+            return;
+        }
+        // 检查阵营信息
+        let teamMask = 0;
+        this.VisitUnit((unit: Unit, unitID: number) =>
+        {
+            if(unitID == dieUnitID) 
+            {
+                return;
+            }
+
+            if(unit.Team == eUnitTeam.Red) 
+            {
+                teamMask |= 1;
+            }
+            else if(unit.Team == eUnitTeam.Blue) 
+            {
+                teamMask |= 2;
+            }
+        });
+
+        if(teamMask != 3) // 即只有一方阵营存活
+        {
+            Core.EventMgr.Emit(EventID.GAME_OVER, new GameOverMsg(teamMask));
+        }
     }
 }

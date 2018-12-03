@@ -218,11 +218,7 @@ export class HookSkill implements BaseTicker
             // 造成伤害
             if(this.m_stHookedUnit) 
             {
-                let content = {
-                    unitID: this.m_stHookedUnitID,
-                    hpChange: -this.m_iHookDamage
-                };
-                Core.NetMgr.SendTickMessage(eTickMessageType.HP_CHANGE, content);
+                Core.GameLogic.ServerRequestMgr.ReqUnitHPChange(this.m_stHookedUnitID, -this.m_iHookDamage);
             }
         }
 

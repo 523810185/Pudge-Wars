@@ -2,6 +2,8 @@ import {HPBar} from "./HPBar";
 import Core from "../../core/Core";
 import {CoreConfig} from "../../core/CoreConfig";
 import {eMessageHead} from "../../core/NetMgr";
+import {EventID} from "../../core/EventID";
+import {UnitDieMsg} from "../../common/message/EventMsg";
 
 /**单位类型 */
 export enum eUnitType 
@@ -214,38 +216,8 @@ export class Unit
     {
         // TODO: 单位死亡单位如何处理的逻辑以后要修改
 
-        // 只有当死亡单位就是本机控制的英雄时才检查阵营信息：这样可以确保只有一个人向服务器发送了结算消息
-        if(Core.GameLogic.UnitMgr.GetUnitByID(CoreConfig.MY_HERO_ID) != this)
-        {
-            this.Clear();
-            return;
-        }
-        else 
-        {
-            this.Clear();
-        }
+        Core.EventMgr.Emit(EventID.UNIT_DIE, new UnitDieMsg(Core.GameLogic.UnitMgr.GetIDByUnit(this)));
 
-        // 先清空在检查阵营信息
-        let teamMask = 0;
-        Core.GameLogic.UnitMgr.VisitUnit((unit: Unit, unitID: number) =>
-        {
-            if(unit.Team == eUnitTeam.Red) 
-            {
-                teamMask |= 1;
-            }
-            else if(unit.Team == eUnitTeam.Blue) 
-            {
-                teamMask |= 2;
-            }
-        });
-
-        if(teamMask != 3) // 即只有一方阵营存活
-        {
-            let content = {
-                result: "win",
-                teamMask: teamMask
-            };
-            Core.NetMgr.EmitMsgToServer(eMessageHead.GAME_END, JSON.stringify(content));
-        }
+        this.Clear();
     }
 }

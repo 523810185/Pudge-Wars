@@ -75,11 +75,7 @@ export class FireAroundSkill implements BaseTicker
             if(dis - unit.CollisionSize <= this.DAMAGE_RADIUS) 
             {
                 // 造成伤害
-                let content = {
-                    unitID: unitID,
-                    hpChange: -this.FIRE_DAMAGE
-                };
-                Core.NetMgr.SendTickMessage(eTickMessageType.HP_CHANGE, content);
+                Core.GameLogic.ServerRequestMgr.ReqUnitHPChange(unitID, -this.FIRE_DAMAGE);
             }
         });
     }

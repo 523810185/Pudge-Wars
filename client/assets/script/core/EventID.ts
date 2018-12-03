@@ -10,4 +10,8 @@ export class EventID
     public static SPAWN_THINGS: number = 4;
     /**物品被拾取 */
     public static PICK_UP_THING: number = 5;
+    /**游戏结束 */
+    public static GAME_OVER: number = 6;
+    /**单位死亡 */
+    public static UNIT_DIE: number = 7;
 }

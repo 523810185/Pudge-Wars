@@ -1,4 +1,5 @@
 import {EventMsg} from "../../core/EventMgr";
+import {Unit} from "../../battle/common/Unit";
 
 /**
  * 单位释放技能的消息
@@ -95,4 +96,32 @@ export class PickUpThingMsg implements EventMsg
 
     public get UnitID(): number {return this.m_iUnitID;}
     public get ThingID(): number {return this.m_iThingID;}
+}
+
+/**
+ * 单位死亡的消息
+ */
+export class UnitDieMsg implements EventMsg 
+{
+    private m_iUnitID: number;
+    constructor(unit: number) 
+    {
+        this.m_iUnitID = unit;
+    }
+
+    public get UnitID(): number {return this.m_iUnitID;}
+}
+
+/**
+ * 游戏结束的消息
+ */
+export class GameOverMsg implements EventMsg 
+{
+    private m_iWinnerTeamMask: number;
+    constructor(winnerTeamMask: number) 
+    {
+        this.m_iWinnerTeamMask = winnerTeamMask;
+    }
+
+    public get WinnerTeamMask(): number {return this.m_iWinnerTeamMask;}
 }
